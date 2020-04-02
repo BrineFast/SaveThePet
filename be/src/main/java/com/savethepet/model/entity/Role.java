@@ -3,8 +3,9 @@ package com.savethepet.model.entity;
 import org.springframework.security.core.GrantedAuthority;
 
 /**
- * @author Alexey Klimov
  * all roles that exists in application
+ *
+ * @author Alexey Klimov
  */
 public enum Role implements GrantedAuthority {
     USER,

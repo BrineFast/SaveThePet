@@ -6,28 +6,32 @@ import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 
 import javax.persistence.*;
 import java.util.Collection;
 import java.util.Set;
 
 /**
- * @author Alexey Klimov
  * Class that represents the user and info about him
+ *
+ * @author Alexey Klimov
  */
 
 @Data
 @RequiredArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PUBLIC, force = true)
 @Entity
-public class User implements UserDetails {
+public class User implements UserDetails{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
 
-    private final String username;
+    private final String email;
+
+    private String googleId;
 
     private final String password;
 
@@ -45,6 +49,11 @@ public class User implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return roles;
+    }
+
+    @Override
+    public String getUsername() {
+        return getEmail();
     }
 
     @Override

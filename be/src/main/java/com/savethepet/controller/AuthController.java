@@ -18,14 +18,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.net.URI;
 import java.util.Collections;
 
 /**
- * @author Alexey Klimov
  * Form Auth Controller
+ *
+ * @author Alexey Klimov
  */
 @RestController
 public class AuthController {
@@ -43,11 +42,12 @@ public class AuthController {
     private CustomUserService userService;
 
     /**
-     * Method for processing GET requests to the LOGIN page
-     * Rerouting to frontend
+     * Redirects request to frontend
+     *
+     * @return
      */
     @GetMapping("/login")
-    public ResponseEntity<String> getLogin() throws IOException {
+    public ResponseEntity<String> getLogin() {
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.setLocation(URI.create(rerouteURL + "/login"));
         return
@@ -57,11 +57,12 @@ public class AuthController {
     }
 
     /**
-     * Method for processing GET requests to the REGISTRATION page
-     * Rerouting to frontend
+     * Redirects request to frontend
+     *
+     * @return
      */
     @GetMapping("/registration")
-    public ResponseEntity<String> getRegistration(HttpServletResponse response) throws IOException {
+    public ResponseEntity<String> getRegistration() {
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.setLocation(URI.create(rerouteURL + "/registration"));
         return
@@ -71,21 +72,28 @@ public class AuthController {
     }
 
     /**
-     * Method for processing POST requests to the REGISTRATION page
-     * Registration of users
+     * Adds new User to DataBase or throws exception if user already exists and redirect to login     *
+     *
+     * @param registrationDto
+     * @return
+     * @throws UserAlreadyExistException
      */
     @PostMapping("/registration")
-    public ResponseEntity<String> addUser(@Validated @RequestBody UserDto dto) throws UserAlreadyExistException {
-        User userFromDto = UserDto.userFromDto(dto, passwordEncoder);
+    public ResponseEntity<String> addUser(@Validated @RequestBody UserDto registrationDto) throws UserAlreadyExistException {
         HttpHeaders responseHeaders = new HttpHeaders();
-        if (userService.loadUserByUsername(userFromDto.getUsername()) != null) {
-            throw new UserAlreadyExistException();
+        if (userRepo.findByEmail(registrationDto.getEmail()).isPresent()) {
+            throw new UserAlreadyExistException("pivo");
+        } else {
+            User userFromDto = UserDto.userFromDto(registrationDto, passwordEncoder);
+            userFromDto.setRoles(Collections.singleton(Role.USER));
+            userRepo.save(userFromDto);
         }
-        userFromDto.setRoles(Collections.singleton(Role.USER));
-        userRepo.save(userFromDto);
         responseHeaders.setLocation(URI.create(rerouteURL + "/login"));
         return ResponseEntity.status(HttpStatus.OK)
                 .headers(responseHeaders)
-                .body("");
+                .body(" ...|\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"| |\\\n" +
+                        "... |Холодное пиво! ||\"\"\\__,_\n" +
+                        "... |_____________ |||_|__|_ )\n" +
+                        "... *(@)|(@)\"\"\"*******(@)\"");
     }
 }

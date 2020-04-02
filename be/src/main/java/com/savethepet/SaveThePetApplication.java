@@ -4,8 +4,9 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 /**
- * @author Alexey Klimov
  * Main Application class
+ *
+ * @author Alexey Klimov
  */
 
 @SpringBootApplication
@@ -16,3 +17,5 @@ public class SaveThePetApplication {
     }
 
 }
+
+

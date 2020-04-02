@@ -1,15 +1,14 @@
 package com.savethepet.config;
 
+import com.savethepet.service.CustomUserService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableOAuth2Client;
@@ -17,6 +16,9 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.E
 
 /**
  * Configuration of Spring Security
+ *
+ * Form auth
+ * Google Oauth2
  *
  * @author Alexey Klimov
  */
@@ -30,9 +32,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     /**
      * Service for getting user information
      */
-    @Qualifier("customUserService")
+
     @Autowired
-    private UserDetailsService userDetailsService;
+    private CustomUserService customUserService;
 
     /**
      * Encoder for storage passwords in data storage
@@ -42,8 +44,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return new BCryptPasswordEncoder();
     }
 
+
     /**
-     * Http Config
+     * Configure for http requests
+     *
+     * @param http
+     * @throws Exception
      */
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -51,7 +57,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .csrf()
                     .disable()
                 .authorizeRequests()
-                    .antMatchers("/login", "/registration").permitAll()
+                    .antMatchers("/login", "/registration","/swagger-resources/**").permitAll()
                     .anyRequest().authenticated()
                 .and()
                     .formLogin()
@@ -62,17 +68,23 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                     .logout()
                         .logoutUrl("/logout")
+                        .logoutSuccessUrl("/login")
                         .invalidateHttpSession(true)
                         .deleteCookies("JSESSIONID");
+
     }
 
+
     /**
-     * Authentication config
+     * Configure for authentication
+     *
+     * @param auth
+     * @throws Exception
      */
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth
-                .userDetailsService(userDetailsService)
+                .userDetailsService(customUserService)
                 .passwordEncoder(passwordEncoder());
 
     }

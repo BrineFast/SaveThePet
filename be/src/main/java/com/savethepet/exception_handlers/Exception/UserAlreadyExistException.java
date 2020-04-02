@@ -6,14 +6,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 /**
- * @author Alexey Klimov
  * Exception for attempts to register an existing user
+ *
+ * @author Alexey Klimov
  */
 
 @ResponseStatus(HttpStatus.NOT_ACCEPTABLE)
-@NoArgsConstructor
-@Data
-public class UserAlreadyExistException extends Exception {
+public class UserAlreadyExistException extends RuntimeException {
 
-    private final String message = "User already exists";
+    public UserAlreadyExistException(String message) {
+        super(message);
+    }
 }

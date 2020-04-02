@@ -1,14 +1,20 @@
 package com.savethepet.model.dao;
 
 import com.savethepet.model.entity.User;
-import org.springframework.data.repository.CrudRepository;
-import org.springframework.stereotype.Repository;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.Optional;
 
 /**
+ * Repository for USERS
+ *
  * @author Alexey Klimov
- * Reprository for USERS
  */
-@Repository
-public interface UserRepo extends CrudRepository<User, Long> {
-    User findByUsername(String username);
+
+
+public interface UserRepo extends JpaRepository<User, Long> {
+
+    Optional<User> findByEmail(String email);
+
+    Optional<User> findByGoogleId(String id);
 }
