@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
  *
  * @author Alexey Klimov
  */
-
 @Service
 public class CustomUserService implements UserDetailsService {
 
@@ -21,6 +20,6 @@ public class CustomUserService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        return userRepo.findByEmail(email).orElse(null);
+        return userRepo.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException(email));
     }
 }

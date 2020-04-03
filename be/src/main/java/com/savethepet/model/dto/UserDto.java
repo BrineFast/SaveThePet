@@ -7,6 +7,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
 
 /**
  * DTO for registration new users
@@ -18,6 +19,11 @@ import javax.validation.constraints.NotBlank;
 public class UserDto {
 
     @Email
+    @Pattern(regexp = "^(?:[a-zA-Z0-9_'^&/+-])" +
+            "+(?:\\.(?:[a-zA-Z0-9_'^&/+-])+)" +
+            "*@(?:(?:\\[?(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))\\.)" +
+            "{3}(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\]?)|(?:[a-zA-Z0-9-]+\\.)" +
+            "+(?:[a-zA-Z]){2,}\\.?)$")
     private String email;
 
     @NotBlank
@@ -29,15 +35,9 @@ public class UserDto {
     /**
      * Creates new User from dto
      *
-     * @param dto
+     * @param userDto
      * @param passwordEncoder
      * @return
      */
-    public static User userFromDto(UserDto dto, PasswordEncoder passwordEncoder) {
-        return new User(
-                dto.getEmail(),
-                passwordEncoder.encode(dto.getPassword()),
-                dto.getName()
-        );
-    }
+
 }

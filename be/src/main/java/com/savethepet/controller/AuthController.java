@@ -6,6 +6,10 @@ import com.savethepet.model.dto.UserDto;
 import com.savethepet.model.entity.Role;
 import com.savethepet.model.entity.User;
 import com.savethepet.service.CustomUserService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -26,6 +30,7 @@ import java.util.Collections;
  *
  * @author Alexey Klimov
  */
+@Api
 @RestController
 public class AuthController {
 
@@ -46,6 +51,8 @@ public class AuthController {
      *
      * @return
      */
+    @ApiOperation("Returns login page")
+    @ApiResponse(code = 200, message = "get successful")
     @GetMapping("/login")
     public ResponseEntity<String> getLogin() {
         HttpHeaders responseHeaders = new HttpHeaders();
@@ -56,20 +63,6 @@ public class AuthController {
                         .body("");
     }
 
-    /**
-     * Redirects request to frontend
-     *
-     * @return
-     */
-    @GetMapping("/registration")
-    public ResponseEntity<String> getRegistration() {
-        HttpHeaders responseHeaders = new HttpHeaders();
-        responseHeaders.setLocation(URI.create(rerouteURL + "/registration"));
-        return
-                ResponseEntity.status(HttpStatus.OK)
-                        .headers(responseHeaders)
-                        .body("");
-    }
 
     /**
      * Adds new User to DataBase or throws exception if user already exists and redirect to login     *
@@ -78,13 +71,21 @@ public class AuthController {
      * @return
      * @throws UserAlreadyExistException
      */
+    @ApiOperation("Return home page and add new user in database")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "User saved successfully"),
+            @ApiResponse(code = 406, message = "User already exists")
+    })
     @PostMapping("/registration")
     public ResponseEntity<String> addUser(@Validated @RequestBody UserDto registrationDto) throws UserAlreadyExistException {
         HttpHeaders responseHeaders = new HttpHeaders();
         if (userRepo.findByEmail(registrationDto.getEmail()).isPresent()) {
-            throw new UserAlreadyExistException("pivo");
+            throw new UserAlreadyExistException(registrationDto.toString());
         } else {
-            User userFromDto = UserDto.userFromDto(registrationDto, passwordEncoder);
+            User userFromDto = new User();
+            userFromDto.setEmail(registrationDto.getEmail());
+            userFromDto.setPassword(registrationDto.getPassword());
+            userFromDto.setName(registrationDto.getPassword());
             userFromDto.setRoles(Collections.singleton(Role.USER));
             userRepo.save(userFromDto);
         }

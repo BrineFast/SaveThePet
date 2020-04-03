@@ -2,6 +2,9 @@ package com.savethepet.controller;
 
 import com.savethepet.model.dao.UserRepo;
 import com.savethepet.model.entity.User;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -12,6 +15,7 @@ import org.springframework.security.oauth2.client.authentication.OAuth2Authentic
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
+import springfox.documentation.annotations.ApiIgnore;
 
 import java.net.URI;
 import java.security.Principal;
@@ -21,6 +25,7 @@ import java.security.Principal;
  *
  * @author Alexey Klimov
  */
+@Api
 @RestController
 public class HomeController {
 
@@ -39,8 +44,10 @@ public class HomeController {
      * @param principal
      * @return
      */
+    @ApiOperation("Returns home page and save new user from oauth2")
+    @ApiResponse(code = 200, message = "Successfully")
     @GetMapping("/home")
-    public ResponseEntity<String> auth(Principal principal) {
+    public ResponseEntity<String> auth(@ApiIgnore Principal principal) {
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.setLocation(URI.create(rerouteURL + "/home"));
 
@@ -48,13 +55,14 @@ public class HomeController {
         if (principal instanceof OAuth2AuthenticationToken) {
             OAuth2User userFromOauth = ((OAuth2AuthenticationToken) principal).getPrincipal();
             if (!userRepo.findByGoogleId(userFromOauth.getAttribute("sub")).isPresent()) {
-                User newUser = new User(userFromOauth.getAttribute("email"),
-                        userFromOauth.getAttribute("password"),
-                        passwordEncoder.encode(userFromOauth.getAttribute("name")));
+                User newUser = new User();
+                newUser.setEmail(userFromOauth.getAttribute("email"));
+                newUser.setName(userFromOauth.getAttribute("name"));
                 newUser.setImg(userFromOauth.getAttribute("picture"));
                 userRepo.save(newUser);
             }
         }
+
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .headers(responseHeaders)
