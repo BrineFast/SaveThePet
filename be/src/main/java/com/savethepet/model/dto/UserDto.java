@@ -1,9 +1,7 @@
 package com.savethepet.model.dto;
 
-import com.savethepet.model.entity.User;
 import lombok.Builder;
 import lombok.Data;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;

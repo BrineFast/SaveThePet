@@ -5,7 +5,6 @@ import com.savethepet.model.dao.UserRepo;
 import com.savethepet.model.dto.UserDto;
 import com.savethepet.model.entity.Role;
 import com.savethepet.model.entity.User;
-import com.savethepet.service.CustomUserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;

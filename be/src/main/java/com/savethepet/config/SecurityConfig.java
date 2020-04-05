@@ -16,7 +16,7 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.E
 
 /**
  * Configuration of Spring Security
- *
+ * <p>
  * Form auth
  * Google Oauth2
  *
@@ -53,29 +53,29 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .csrf()
-                    .disable()
+                .disable()
                 .authorizeRequests()
-                    .antMatchers("/login",
-                            "/registration",
-                            "/home",
-                            "/api-docs",
-                            "/swagger-resources/**",
-                            "/swagger-ui.html",
-                            "/webjars/**",
-                            "/configuration/ui").permitAll()
-                    .anyRequest().authenticated()
+                .antMatchers("/login",
+                        "/registration",
+                        "/home",
+                        "/api-docs",
+                        "/swagger-resources/**",
+                        "/swagger-ui.html",
+                        "/webjars/**",
+                        "/configuration/ui").permitAll()
+                .anyRequest().authenticated()
                 .and()
-                    .formLogin()
-                        .defaultSuccessUrl("/home")
+                .formLogin()
+                .defaultSuccessUrl("/home")
                 .and()
-                    .oauth2Login()
-                        .defaultSuccessUrl("/home")
+                .oauth2Login()
+                .defaultSuccessUrl("/home")
                 .and()
-                    .logout()
-                        .logoutUrl("/logout")
-                        .logoutSuccessUrl("/login")
-                        .invalidateHttpSession(true)
-                        .deleteCookies("JSESSIONID");
+                .logout()
+                .logoutUrl("/logout")
+                .logoutSuccessUrl("/login")
+                .invalidateHttpSession(true)
+                .deleteCookies("JSESSIONID");
 
     }
 

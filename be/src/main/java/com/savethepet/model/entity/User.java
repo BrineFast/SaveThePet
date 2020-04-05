@@ -16,7 +16,6 @@ import java.util.Set;
  *
  * @author Alexey Klimov
  */
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PUBLIC, force = true)
@@ -31,6 +30,10 @@ public class User implements UserDetails {
     private String email;
 
     private String googleId;
+
+    private String yandexId;
+
+    private String vkId;
 
     private String password;
 

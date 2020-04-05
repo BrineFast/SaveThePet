@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -47,17 +46,13 @@ public class HomeController {
     public ResponseEntity<String> auth(@ApiIgnore Principal principal) {
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.setLocation(URI.create(rerouteURL + "/home"));
-
-
-        if (principal instanceof OAuth2AuthenticationToken) {
+        if (userRepo.findByGoogleId(principal.getName()).isEmpty()) {
             OAuth2User userFromOauth = ((OAuth2AuthenticationToken) principal).getPrincipal();
-            if (!userRepo.findByGoogleId(userFromOauth.getAttribute("sub")).isPresent()) {
-                User newUser = new User();
-                newUser.setEmail(userFromOauth.getAttribute("email"));
-                newUser.setName(userFromOauth.getAttribute("name"));
-                newUser.setImg(userFromOauth.getAttribute("picture"));
-                userRepo.save(newUser);
-            }
+            User newUser = new User();
+            newUser.setEmail(userFromOauth.getAttribute("email"));
+            newUser.setName(userFromOauth.getAttribute("name"));
+            newUser.setImg(userFromOauth.getAttribute("picture"));
+            userRepo.save(newUser);
         }
 
         return ResponseEntity
