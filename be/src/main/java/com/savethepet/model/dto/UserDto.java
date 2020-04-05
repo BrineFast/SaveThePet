@@ -32,12 +32,4 @@ public class UserDto {
     @NotBlank
     private String name;
 
-    /**
-     * Creates new User from dto
-     *
-     * @param userDto
-     * @param passwordEncoder
-     * @return
-     */
-
 }

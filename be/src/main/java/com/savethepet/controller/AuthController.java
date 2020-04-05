@@ -43,8 +43,6 @@ public class AuthController {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    @Autowired
-    private CustomUserService userService;
 
     /**
      * Redirects request to frontend
@@ -84,7 +82,7 @@ public class AuthController {
         } else {
             User userFromDto = new User();
             userFromDto.setEmail(registrationDto.getEmail());
-            userFromDto.setPassword(registrationDto.getPassword());
+            userFromDto.setPassword(passwordEncoder.encode(registrationDto.getPassword()));
             userFromDto.setName(registrationDto.getPassword());
             userFromDto.setRoles(Collections.singleton(Role.USER));
             userRepo.save(userFromDto);

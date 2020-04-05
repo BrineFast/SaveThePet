@@ -3,7 +3,7 @@ package com.savethepet.model.entity;
 import org.springframework.security.core.GrantedAuthority;
 
 /**
- * all roles that exists in application
+ * All roles that exists in application
  *
  * @author Alexey Klimov
  */

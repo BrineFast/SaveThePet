@@ -22,7 +22,6 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.E
  *
  * @author Alexey Klimov
  */
-
 @Configuration
 @AllArgsConstructor
 @EnableWebSecurity
@@ -32,7 +31,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     /**
      * Service for getting user information
      */
-
     @Autowired
     private CustomUserService customUserService;
 

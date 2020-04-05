@@ -32,9 +32,6 @@ public class HomeController {
     @Autowired
     private UserRepo userRepo;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
     @Value("${reroute.url}")
     private String rerouteURL;
 
