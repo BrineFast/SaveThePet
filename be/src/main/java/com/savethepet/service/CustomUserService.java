@@ -21,4 +21,5 @@ public class CustomUserService implements UserDetailsService {
     public UserDetails loadUserByUsername(String email) {
         return userRepo.findByEmail(email).orElse(null);
     }
+
 }

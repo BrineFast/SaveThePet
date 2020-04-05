@@ -15,4 +15,5 @@ public interface UserRepo extends JpaRepository<User, Long> {
     Optional<User> findByEmail(String email);
 
     Optional<User> findByGoogleId(String id);
+
 }

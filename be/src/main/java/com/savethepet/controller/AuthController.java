@@ -78,7 +78,8 @@ public class AuthController {
         HttpHeaders responseHeaders = new HttpHeaders();
         if (userRepo.findByEmail(registrationDto.getEmail()).isPresent()) {
             throw new UserAlreadyExistException(registrationDto.toString());
-        } else {
+        }
+        else {
             User userFromDto = new User();
             userFromDto.setEmail(registrationDto.getEmail());
             userFromDto.setPassword(passwordEncoder.encode(registrationDto.getPassword()));
@@ -94,4 +95,5 @@ public class AuthController {
                         "... |_____________ |||_|__|_ )\n" +
                         "... *(@)|(@)\"\"\"*******(@)\"");
     }
+
 }

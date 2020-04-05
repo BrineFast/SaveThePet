@@ -15,10 +15,9 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.E
 
 
 /**
- * Configuration of Spring Security
- *
- * Form auth
- * Google Oauth2
+ * Configuration of Spring Security: *
+ * 1) Basic auth
+ * 2) Google Oauth2
  *
  * @author Alexey Klimov
  */
@@ -93,4 +92,5 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .passwordEncoder(passwordEncoder());
 
     }
+
 }
