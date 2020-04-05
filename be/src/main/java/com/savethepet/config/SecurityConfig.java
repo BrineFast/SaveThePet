@@ -16,7 +16,7 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.E
 
 /**
  * Configuration of Spring Security
- * <p>
+ * 
  * Form auth
  * Google Oauth2
  *
