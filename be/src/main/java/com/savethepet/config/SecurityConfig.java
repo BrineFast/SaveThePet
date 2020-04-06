@@ -1,7 +1,6 @@
 package com.savethepet.config;
 
 import com.savethepet.service.CustomUserService;
-import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,24 +17,20 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.E
  * Configuration of Spring Security: *
  * 1) Basic auth
  * 2) Google Oauth2
- *
+ * 3) Yandex Oauth2
+ * 4) Vk Oauth2
  * @author Alexey Klimov
  */
 @Configuration
-@AllArgsConstructor
 @EnableWebSecurity
 @EnableOAuth2Client
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    /**
-     * Service for getting user information
-     */
+
     @Autowired
     private CustomUserService customUserService;
 
-    /**
-     * Encoder for storage passwords in data storage
-     */
+
     @Bean
     PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -68,7 +63,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         .defaultSuccessUrl("/home")
                 .and()
                     .oauth2Login()
-                        .defaultSuccessUrl("/home")
                 .and()
                     .logout()
                         .logoutUrl("/logout")
