@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
  *
  * @author Alexey Klimov
  */
-
 @ResponseStatus(HttpStatus.NOT_ACCEPTABLE)
 public class UserAlreadyExistException extends RuntimeException {
 

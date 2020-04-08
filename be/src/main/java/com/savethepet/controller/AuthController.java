@@ -3,7 +3,6 @@ package com.savethepet.controller;
 import com.savethepet.exception_handlers.Exception.UserAlreadyExistException;
 import com.savethepet.model.dao.UserRepo;
 import com.savethepet.model.dto.UserDto;
-import com.savethepet.model.entity.Role;
 import com.savethepet.model.entity.User;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -22,7 +21,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.net.URI;
-import java.util.Collections;
 
 /**
  * Form Auth Controller
@@ -74,17 +72,15 @@ public class AuthController {
             @ApiResponse(code = 406, message = "User already exists")
     })
     @PostMapping("/registration")
-    public ResponseEntity<String> addUser(@Validated @RequestBody UserDto registrationDto) throws UserAlreadyExistException {
+    public ResponseEntity<String> addUser(@Validated @RequestBody UserDto registrationDto) {
         HttpHeaders responseHeaders = new HttpHeaders();
         if (userRepo.findByEmail(registrationDto.getEmail()).isPresent()) {
             throw new UserAlreadyExistException(registrationDto.toString());
-        }
-        else {
+        } else {
             User userFromDto = new User();
             userFromDto.setEmail(registrationDto.getEmail());
             userFromDto.setPassword(passwordEncoder.encode(registrationDto.getPassword()));
             userFromDto.setName(registrationDto.getPassword());
-            userFromDto.setRoles(Collections.singleton(Role.USER));
             userRepo.save(userFromDto);
         }
         responseHeaders.setLocation(URI.create(rerouteURL + "/login"));
