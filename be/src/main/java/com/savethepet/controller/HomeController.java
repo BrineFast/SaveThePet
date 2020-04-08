@@ -35,27 +35,27 @@ public class HomeController {
     UserRepo userRepo;
 
     @ApiOperation("saves user from oauth2")
-    @ApiResponse(code = 200,message = "all ok")
-    @GetMapping("/home")
+    @ApiResponse(code = 200, message = "all ok")
+    @GetMapping("/be/oauth/registration")
     public ResponseEntity<String> addUserFromOauth2(@ApiIgnore Principal principal) {
-        if (principal instanceof OAuth2AuthenticationToken) {
-            OAuth2User userFromOauth = ((OAuth2AuthenticationToken) principal).getPrincipal();
-            if (userRepo.findByAuthId(principal.getName()).isEmpty()) {
-                User newUser = new User();
-                String clientRegistrationId = ((OAuth2AuthenticationToken) principal).getAuthorizedClientRegistrationId();
-                if (clientRegistrationId.equals("google")) {
-                    newUser.setName(userFromOauth.getAttribute("name"));
-                    newUser.setGoogleId(principal.getName());
-                } else if (clientRegistrationId.equals("facebook")) {
-                    newUser.setName(userFromOauth.getAttribute("name"));
-                    newUser.setFacebookId(principal.getName());
-                } else if (clientRegistrationId.equals("yandex")) {
-                    newUser.setName(userFromOauth.getAttribute("real_name"));
-                    newUser.setYandexId(principal.getName());
-                }
-                userRepo.save(newUser);
+        OAuth2User userFromOauth = ((OAuth2AuthenticationToken) principal).getPrincipal();
+        if (userRepo.findByAuthId(principal.getName()).isEmpty()) {
+            User newUser = new User();
+            String clientRegistrationId = ((OAuth2AuthenticationToken) principal).getAuthorizedClientRegistrationId();
+            if (clientRegistrationId.equals("google")) {
+                newUser.setName(userFromOauth.getAttribute("name"));
+                newUser.setGoogleId(principal.getName());
+            } else if (clientRegistrationId.equals("facebook")) {
+                newUser.setName(userFromOauth.getAttribute("name"));
+                newUser.setFacebookId(principal.getName());
+            } else if (clientRegistrationId.equals("yandex")) {
+                newUser.setName(userFromOauth.getAttribute("real_name"));
+                newUser.setYandexId(principal.getName());
             }
+            userRepo.save(newUser);
         }
+
+
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.setLocation(URI.create(rerouteURL + "/home"));
         return

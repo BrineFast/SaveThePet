@@ -14,7 +14,7 @@ import javax.validation.constraints.Pattern;
  */
 @Data
 @Builder
-public class UserDto {
+public class registrationUserDTO {
 
     @Email
     @Pattern(regexp = "^(?:[a-zA-Z0-9_'^&/+-])" +

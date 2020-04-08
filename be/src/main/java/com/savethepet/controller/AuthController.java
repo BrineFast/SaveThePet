@@ -2,7 +2,7 @@ package com.savethepet.controller;
 
 import com.savethepet.exception_handlers.Exception.UserAlreadyExistException;
 import com.savethepet.model.dao.UserRepo;
-import com.savethepet.model.dto.UserDto;
+import com.savethepet.model.dto.registrationUserDTO;
 import com.savethepet.model.entity.User;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -72,7 +72,7 @@ public class AuthController {
             @ApiResponse(code = 406, message = "User already exists")
     })
     @PostMapping("/registration")
-    public ResponseEntity<String> addUser(@Validated @RequestBody UserDto registrationDto) {
+    public ResponseEntity<String> addUser(@Validated @RequestBody registrationUserDTO registrationDto) {
         HttpHeaders responseHeaders = new HttpHeaders();
         if (userRepo.findByEmail(registrationDto.getEmail()).isPresent()) {
             throw new UserAlreadyExistException(registrationDto.toString());
