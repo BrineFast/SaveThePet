@@ -18,6 +18,7 @@ import org.springframework.security.oauth2.client.registration.ClientRegistratio
 import org.springframework.security.oauth2.client.registration.InMemoryClientRegistrationRepository;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableOAuth2Client;
 
+import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -93,7 +94,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .oauth2Login()
                 .clientRegistrationRepository(clientRegistrationRepository())
                 .authorizedClientService(oAuth2AuthorizedClientService())
-                .defaultSuccessUrl("/be/oauth2/registration")
+                .defaultSuccessUrl("/be/oauth/registration")
                 .and()
                 .logout()
                 .logoutUrl("/logout")
@@ -121,7 +122,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
      *
      * @return
      */
-    @Bean
+    @PostConstruct
     public ClientRegistrationRepository clientRegistrationRepository() {
         ClientRegistration yandex =
                 CustomOauth2Provider.YANDEX.getBuilder("yandex")
