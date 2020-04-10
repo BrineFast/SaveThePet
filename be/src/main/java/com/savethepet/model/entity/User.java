@@ -39,6 +39,10 @@ public class User implements UserDetails {
 
     private String name;
 
+    private String phoneNumber;
+
+    private String location;
+
     private String img = "default img";
 
     private boolean active = true;
@@ -47,6 +51,9 @@ public class User implements UserDetails {
     @CollectionTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"))
     @Enumerated(EnumType.STRING)
     private Set<Role> roles = Collections.singleton(Role.USER);
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    private Set<Pet> pets;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

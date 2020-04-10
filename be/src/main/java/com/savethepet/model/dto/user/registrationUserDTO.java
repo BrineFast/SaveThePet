@@ -1,4 +1,4 @@
-package com.savethepet.model.dto;
+package com.savethepet.model.dto.user;
 
 import lombok.Builder;
 import lombok.Data;
