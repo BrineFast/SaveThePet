@@ -34,33 +34,28 @@ public class HomeController {
     @Autowired
     UserRepo userRepo;
 
-    @ApiOperation("saves user from oauth2")
-    @ApiResponse(code = 200, message = "all ok")
+    @ApiOperation("Register user from Ouath")
+    @ApiResponse(code = 301, message = "redirected to frontend")
     @GetMapping("/be/oauth/registration")
-    public ResponseEntity<String> addUserFromOauth2(@ApiIgnore Principal principal) {
+    public ResponseEntity<Void> addUserFromOauth2(@ApiIgnore Principal principal) {
         OAuth2User userFromOauth = ((OAuth2AuthenticationToken) principal).getPrincipal();
-        if (userRepo.findByAuthId(principal.getName()).isEmpty()) {
-            User newUser = new User();
-            String clientRegistrationId = ((OAuth2AuthenticationToken) principal).getAuthorizedClientRegistrationId();
-            if (clientRegistrationId.equals("google")) {
-                newUser.setName(userFromOauth.getAttribute("name"));
-                newUser.setGoogleId(principal.getName());
-            } else if (clientRegistrationId.equals("facebook")) {
-                newUser.setName(userFromOauth.getAttribute("name"));
-                newUser.setFacebookId(principal.getName());
-            } else if (clientRegistrationId.equals("yandex")) {
-                newUser.setName(userFromOauth.getAttribute("real_name"));
-                newUser.setYandexId(principal.getName());
-            }
+        User newUser = new User();
+        String clientRegistrationId = ((OAuth2AuthenticationToken) principal).getAuthorizedClientRegistrationId();
+        if (clientRegistrationId.equals("google") && userRepo.findByGoogleId(principal.getName()).isEmpty()) {
+            newUser.setName(userFromOauth.getAttribute("name"));
+            newUser.setGoogleId(principal.getName());
+            userRepo.save(newUser);
+        } else if (clientRegistrationId.equals("facebook") && userRepo.findByFacebookId(principal.getName()).isEmpty()) {
+            newUser.setName(userFromOauth.getAttribute("name"));
+            newUser.setFacebookId(principal.getName());
+            userRepo.save(newUser);
+        } else if (clientRegistrationId.equals("yandex") && userRepo.findByYandexId(principal.getName()).isEmpty()) {
+            newUser.setName(userFromOauth.getAttribute("real_name"));
+            newUser.setYandexId(principal.getName());
             userRepo.save(newUser);
         }
-
-
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.setLocation(URI.create(rerouteURL + "/home"));
-        return
-                ResponseEntity.status(HttpStatus.OK)
-                        .headers(responseHeaders)
-                        .body("");
+        return new ResponseEntity<>(responseHeaders, HttpStatus.MOVED_PERMANENTLY);
     }
 }
