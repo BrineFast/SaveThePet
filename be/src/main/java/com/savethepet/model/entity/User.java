@@ -47,17 +47,15 @@ public class User implements UserDetails {
 
     private boolean active = true;
 
-    @ElementCollection(targetClass = Role.class, fetch = FetchType.EAGER)
-    @CollectionTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"))
     @Enumerated(EnumType.STRING)
-    private Set<Role> roles = Collections.singleton(Role.USER);
+    private Role role = Role.USER;
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private Set<Pet> pets;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return roles;
+        return Collections.singleton(role);
     }
 
     @Override
