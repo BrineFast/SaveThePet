@@ -1,6 +1,5 @@
 package com.savethepet.controller;
 
-import com.savethepet.exception_handlers.Exception.NotEnoughPermissionsException;
 import com.savethepet.model.dao.UserRepo;
 import com.savethepet.model.dto.user.UserInfoChangeDTO;
 import com.savethepet.model.dto.user.UserInfoDTO;
@@ -16,7 +15,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
@@ -86,21 +85,9 @@ public class UserPageController {
             @ApiResponse(code = 400, message = "The transmitted information is not valid")
     }
     )
-    @PostMapping("/user/{user_id}")
+    @PatchMapping("/user/{user_id}")
     public ResponseEntity changeUserInfo(@ApiIgnore Principal principal, @PathVariable("user_id") Long id, @RequestBody @Valid UserInfoChangeDTO userInfoChangeDTO) {
-        String principalName = principal.getName();
-        if (principal instanceof OAuth2AuthenticationToken) {
-            String oauth2ClientId = ((OAuth2AuthenticationToken) principal).getAuthorizedClientRegistrationId();
-            User userFromDBByOauth2ClientId = userPageService.getUserByOauth2ClientRegistrationId(oauth2ClientId, principalName);
-            if (!userFromDBByOauth2ClientId.getId().equals(id))
-                throw new NotEnoughPermissionsException
-                        ("user with id =" + userFromDBByOauth2ClientId.getId().toString() + "can`t change info about user with id=" + id.toString());
-        } else {
-            User userFromDBByEmail = userPageService.getUserByEmail(principalName);
-            if (!userFromDBByEmail.getId().equals(id))
-                throw new NotEnoughPermissionsException(
-                        "User with id " + userFromDBByEmail.getId() + " can`t change info user with id " + id.toString());
-        }
+        userPageService.checkUserInfoChangeAccess(principal, id);
         User changedUser = new User();
         changedUser.setName(userInfoChangeDTO.getName());
         changedUser.setEmail(userInfoChangeDTO.getEmail());
@@ -111,6 +98,17 @@ public class UserPageController {
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.setLocation(URI.create(rerouteURL + "/user/" + id.toString()));
         return new ResponseEntity(responseHeaders, HttpStatus.OK);
+    }
+
+    @PatchMapping("/user/{user_id}/oauth/{ClientName}")
+    @Transactional
+    public ResponseEntity addOauth2(@ApiIgnore Principal principal, @ApiIgnore @PathVariable("user_id") Long id, @PathVariable("ClientName") String clientName) {
+        userPageService.checkUserInfoChangeAccess(principal, id);
+        OAuth2Controller.New_OAUTH_USER_ID = id;
+        OAuth2Controller.IS_NEW_OAUTH = true;
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.setLocation(URI.create("http://localhost:8080/oauth2/authorization/" + clientName));
+        return new ResponseEntity(responseHeaders, HttpStatus.MOVED_PERMANENTLY);
     }
 
 }
