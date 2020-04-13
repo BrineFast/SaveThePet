@@ -2,7 +2,6 @@ package com.savethepet.controller;
 
 import com.savethepet.model.dao.UserRepo;
 import com.savethepet.model.entity.User;
-import com.savethepet.service.Oauth2Service;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -27,21 +26,34 @@ import java.security.Principal;
  */
 @Api
 @RestController
-public class Oauth2Controller {
+public class HomeController {
 
     @Value("${reroute.url}")
     private String rerouteURL;
 
     @Autowired
-    private Oauth2Service oauth2Service;
+    UserRepo userRepo;
 
     @ApiOperation("Register user from Ouath")
     @ApiResponse(code = 301, message = "redirected to frontend")
     @GetMapping("/be/oauth/registration")
     public ResponseEntity<Void> addUserFromOauth2(@ApiIgnore Principal principal) {
         OAuth2User userFromOauth = ((OAuth2AuthenticationToken) principal).getPrincipal();
+        User newUser = new User();
         String clientRegistrationId = ((OAuth2AuthenticationToken) principal).getAuthorizedClientRegistrationId();
-        User user = oauth2Service.getUserByOauth2ClientRegistrationId(clientRegistrationId, principal.getName()).orElse(new User());
+        if (clientRegistrationId.equals("google") && userRepo.findByGoogleId(principal.getName()).isEmpty()) {
+            newUser.setName(userFromOauth.getAttribute("name"));
+            newUser.setGoogleId(principal.getName());
+            userRepo.save(newUser);
+        } else if (clientRegistrationId.equals("facebook") && userRepo.findByFacebookId(principal.getName()).isEmpty()) {
+            newUser.setName(userFromOauth.getAttribute("name"));
+            newUser.setFacebookId(principal.getName());
+            userRepo.save(newUser);
+        } else if (clientRegistrationId.equals("yandex") && userRepo.findByYandexId(principal.getName()).isEmpty()) {
+            newUser.setName(userFromOauth.getAttribute("real_name"));
+            newUser.setYandexId(principal.getName());
+            userRepo.save(newUser);
+        }
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.setLocation(URI.create(rerouteURL + "/home"));
         return new ResponseEntity<>(responseHeaders, HttpStatus.MOVED_PERMANENTLY);
