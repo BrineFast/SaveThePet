@@ -86,7 +86,7 @@ public class UserPageController {
             @ApiResponse(code = 400, message = "The transmitted information is not valid")
     }
     )
-    @PostMapping("/user/{user_id}")
+    @PatchMapping("/user/{user_id}")
     public ResponseEntity changeUserInfo(@ApiIgnore Principal principal, @PathVariable("user_id") Long id, @RequestBody @Valid UserInfoChangeDTO userInfoChangeDTO) {
         String principalName = principal.getName();
         if (principal instanceof OAuth2AuthenticationToken) {
@@ -112,5 +112,6 @@ public class UserPageController {
         responseHeaders.setLocation(URI.create(rerouteURL + "/user/" + id.toString()));
         return new ResponseEntity(responseHeaders, HttpStatus.OK);
     }
+
 
 }
