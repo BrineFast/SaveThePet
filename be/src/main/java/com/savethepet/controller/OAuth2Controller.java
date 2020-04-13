@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.core.user.OAuth2User;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import springfox.documentation.annotations.ApiIgnore;
@@ -26,7 +27,12 @@ import java.security.Principal;
  */
 @Api
 @RestController
-public class HomeController {
+public class OAuth2Controller {
+
+    public static boolean IS_NEW_OAUTH;
+
+    public static Long New_OAUTH_USER_ID;
+
 
     @Value("${reroute.url}")
     private String rerouteURL;
@@ -36,11 +42,20 @@ public class HomeController {
 
     @ApiOperation("Register user from Ouath")
     @ApiResponse(code = 301, message = "redirected to frontend")
+    @Transactional
     @GetMapping("/be/oauth/registration")
     public ResponseEntity<Void> addUserFromOauth2(@ApiIgnore Principal principal) {
         OAuth2User userFromOauth = ((OAuth2AuthenticationToken) principal).getPrincipal();
         User newUser = new User();
         String clientRegistrationId = ((OAuth2AuthenticationToken) principal).getAuthorizedClientRegistrationId();
+        String name = principal.getName();
+        User newUser = new User();
+        switch (clientRegistrationId) {
+            case "google":
+                if (userRepo.findByGoogleId(name).isEmpty()) {
+
+                }
+        }
         if (clientRegistrationId.equals("google") && userRepo.findByGoogleId(principal.getName()).isEmpty()) {
             newUser.setName(userFromOauth.getAttribute("name"));
             newUser.setGoogleId(principal.getName());
