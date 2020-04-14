@@ -30,9 +30,6 @@ import java.security.Principal;
 @RestController
 public class UserPageController {
 
-    @Value("${reroute.url}")
-    private String rerouteURL;
-
     @Autowired
     private UserPageService userPageService;
 
@@ -126,6 +123,6 @@ public class UserPageController {
     public void deleteOauth2(@ApiIgnore Principal principal, @PathVariable("user_id") Long id, @PathVariable("ClientName") String clientName) {
         userPageService.checkUserInfoChangeAccess(principal, id);
         userPageService.checkLostAuth(clientName, id);
-        userPageService.deleteOauthFromUser(clientName, principal.getName());
+        userPageService.deleteOauthFromUser(clientName, id);
     }
 }

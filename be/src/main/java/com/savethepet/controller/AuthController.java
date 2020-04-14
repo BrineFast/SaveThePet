@@ -1,6 +1,6 @@
 package com.savethepet.controller;
 
-import com.savethepet.exception_handlers.Exception.UserAlreadyExistException;
+import com.savethepet.exception_handlers.exception.UserAlreadyExistException;
 import com.savethepet.model.dao.UserRepo;
 import com.savethepet.model.dto.user.UserRegistrationDTO;
 import com.savethepet.model.entity.User;

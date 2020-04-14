@@ -1,9 +1,9 @@
 package com.savethepet.service;
 
-import com.savethepet.exception_handlers.Exception.ClientRegistrationIdNotFound;
-import com.savethepet.exception_handlers.Exception.LostInformationAboutUserException;
-import com.savethepet.exception_handlers.Exception.NotEnoughPermissionsException;
-import com.savethepet.exception_handlers.Exception.UserNotFoundException;
+import com.savethepet.exception_handlers.exception.ClientRegistrationIdNotFound;
+import com.savethepet.exception_handlers.exception.LostInformationAboutUserException;
+import com.savethepet.exception_handlers.exception.NotEnoughPermissionsException;
+import com.savethepet.exception_handlers.exception.UserNotFoundException;
 import com.savethepet.model.dao.UserRepo;
 import com.savethepet.model.dto.user.UserInfoChangeDTO;
 import com.savethepet.model.entity.User;
@@ -153,8 +153,8 @@ public class UserPageService {
      * @param clientName
      * @param name
      */
-    public void deleteOauthFromUser(String clientName, String name) {
-        User user = getUserByOauth2ClientRegistrationId(clientName, name);
+    public void deleteOauthFromUser(String clientName, Long id) {
+        User user = getUserById(id);
         switch (clientName) {
             case yandex:
                 user.setYandexId(null);

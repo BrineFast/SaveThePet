@@ -1,4 +1,4 @@
-package com.savethepet.exception_handlers.Exception;
+package com.savethepet.exception_handlers.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;

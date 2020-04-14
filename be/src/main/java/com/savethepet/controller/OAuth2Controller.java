@@ -1,8 +1,8 @@
 package com.savethepet.controller;
 
-import com.savethepet.exception_handlers.Exception.AccountAlreadyUsingException;
-import com.savethepet.exception_handlers.Exception.ClientRegistrationIdNotFound;
-import com.savethepet.exception_handlers.Exception.UserNotFoundException;
+import com.savethepet.exception_handlers.exception.AccountAlreadyUsingException;
+import com.savethepet.exception_handlers.exception.ClientRegistrationIdNotFound;
+import com.savethepet.exception_handlers.exception.UserNotFoundException;
 import com.savethepet.model.dao.UserRepo;
 import com.savethepet.model.entity.User;
 import io.swagger.annotations.Api;
@@ -134,7 +134,7 @@ public class OAuth2Controller {
                     }
                 } else if (IS_LINK_NEW_OAUTH) {
                     IS_LINK_NEW_OAUTH = false;
-                    throw new AccountAlreadyUsingException("google account with id = " + name + alreadyExists);
+                    throw new AccountAlreadyUsingException("yandex account with id = " + name + alreadyExists);
                 }
                 break;
             default:
