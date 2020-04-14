@@ -2,6 +2,7 @@ package com.savethepet.controller;
 
 import com.savethepet.exception_handlers.Exception.AccountAlreadyUsingException;
 import com.savethepet.exception_handlers.Exception.ClientRegistrationIdNotFound;
+import com.savethepet.exception_handlers.Exception.UserNotFoundException;
 import com.savethepet.model.dao.UserRepo;
 import com.savethepet.model.entity.User;
 import io.swagger.annotations.Api;
@@ -31,6 +32,10 @@ import java.security.Principal;
 @Api
 @RestController
 public class OAuth2Controller {
+
+    private static final String userWIthId = "User with id = ";
+    private static final String notFound = " not found";
+    private static final String alreadyExists = " already exists";
 
     /**
      * Flag that shows, what controller need to do - Handle new user or Update existing user
@@ -78,7 +83,8 @@ public class OAuth2Controller {
             case "google":
                 if (userRepo.findByGoogleId(name).isEmpty()) {
                     if (IS_LINK_NEW_OAUTH) {
-                        User userForNewOauth = userRepo.findById(NEW_OAUTH_USER_ID).get();
+                        User userForNewOauth = userRepo.findById(NEW_OAUTH_USER_ID).orElseThrow(
+                                () -> new UserNotFoundException(userWIthId + NEW_OAUTH_USER_ID.toString() + notFound));
                         userForNewOauth.setGoogleId(name);
                         userRepo.save(userForNewOauth);
                         IS_LINK_NEW_OAUTH = false;
@@ -90,13 +96,14 @@ public class OAuth2Controller {
                     }
                 } else if (IS_LINK_NEW_OAUTH) {
                     IS_LINK_NEW_OAUTH = false;
-                    throw new AccountAlreadyUsingException("google account with id = " + name + "already exists");
+                    throw new AccountAlreadyUsingException("google account with id = " + name + alreadyExists);
                 }
                 break;
             case "facebook":
                 if (userRepo.findByFacebookId(name).isEmpty()) {
                     if (IS_LINK_NEW_OAUTH) {
-                        User userForNewOauth = userRepo.findById(NEW_OAUTH_USER_ID).get();
+                        User userForNewOauth = userRepo.findById(NEW_OAUTH_USER_ID).orElseThrow(
+                                () -> new UserNotFoundException(userWIthId + NEW_OAUTH_USER_ID.toString() + notFound));
                         userForNewOauth.setFacebookId(name);
                         userRepo.save(userForNewOauth);
                         IS_LINK_NEW_OAUTH = false;
@@ -108,13 +115,14 @@ public class OAuth2Controller {
                     }
                 } else if (IS_LINK_NEW_OAUTH) {
                     IS_LINK_NEW_OAUTH = false;
-                    throw new AccountAlreadyUsingException("facebook account with id = " + name + "already exists");
+                    throw new AccountAlreadyUsingException("facebook account with id = " + name + alreadyExists);
                 }
                 break;
             case "yandex":
                 if (userRepo.findByYandexId(name).isEmpty()) {
                     if (IS_LINK_NEW_OAUTH) {
-                        User userForNewOauth = userRepo.findById(NEW_OAUTH_USER_ID).get();
+                        User userForNewOauth = userRepo.findById(NEW_OAUTH_USER_ID).orElseThrow(
+                                () -> new UserNotFoundException(userWIthId + NEW_OAUTH_USER_ID.toString() + notFound));
                         userForNewOauth.setYandexId(name);
                         userRepo.save(userForNewOauth);
                     } else {
@@ -126,7 +134,7 @@ public class OAuth2Controller {
                     }
                 } else if (IS_LINK_NEW_OAUTH) {
                     IS_LINK_NEW_OAUTH = false;
-                    throw new AccountAlreadyUsingException("google account with id = " + name + "already exists");
+                    throw new AccountAlreadyUsingException("google account with id = " + name + alreadyExists);
                 }
                 break;
             default:

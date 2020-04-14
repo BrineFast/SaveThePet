@@ -1,6 +1,5 @@
 package com.savethepet.controller;
 
-import com.savethepet.model.dao.UserRepo;
 import com.savethepet.model.dto.user.UserInfoChangeDTO;
 import com.savethepet.model.dto.user.UserInfoDTO;
 import com.savethepet.model.entity.User;
@@ -14,7 +13,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
@@ -36,9 +34,6 @@ public class UserPageController {
     private String rerouteURL;
 
     @Autowired
-    private UserRepo userRepo;
-
-    @Autowired
     private UserPageService userPageService;
 
     /**
@@ -55,8 +50,6 @@ public class UserPageController {
     @GetMapping("/user/{user_id}")
     public UserInfoDTO getUserInfo(@PathVariable("user_id") Long id) {
         User user = userPageService.getUserById(id);
-        HttpHeaders responseHeaders = new HttpHeaders();
-        responseHeaders.setLocation(URI.create(rerouteURL + "/user/" + id.toString()));
         return UserInfoDTO.builder()
                 .name(user.getName())
                 .location(user.getLocation())
@@ -86,7 +79,7 @@ public class UserPageController {
     @PatchMapping("/user/{user_id}")
     public void changeUserInfo(@ApiIgnore Principal principal, @PathVariable("user_id") Long id, @RequestBody @Valid UserInfoChangeDTO userInfoChangeDTO) {
         userPageService.checkUserInfoChangeAccess(principal, id);
-        userPageService.updateUserFromDto(userInfoChangeDTO);
+        userPageService.updateUserFromDto(userInfoChangeDTO, id);
     }
 
     /**

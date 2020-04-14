@@ -22,24 +22,48 @@ import java.security.Principal;
 @Service
 public class UserPageService {
 
+    private static final String userWithOauthId = "User with Oauth2 id =";
+    private static final String notFound="not found";
+    private static final String yandex = "yandex";
+    private static final String google = "google";
+    private static final String facebook = "facebook";
+
     @Autowired
     private UserRepo userRepo;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    /**
+     * Gets User by Id and throws exception if User didnt found
+     *
+     * @param id
+     * @return
+     */
     public User getUserById(Long id) {
         return userRepo.findById(id).orElseThrow(() ->
-                new UserNotFoundException("User with id=" + id.toString() + "not found"));
+                new UserNotFoundException("User with id=" + id.toString() + notFound));
     }
 
+    /**
+     * Gets User by Email and throws exception if User didnt found
+     *
+     * @param email
+     * @return
+     */
     private User getUserByEmail(String email) {
         return userRepo.findByEmail(email).orElseThrow(() ->
-                new UserNotFoundException("User with email=" + email + "not found"));
+                new UserNotFoundException("User with email=" + email + notFound));
     }
 
-    public void updateUserFromDto(UserInfoChangeDTO userInfoChangeDTO) {
-        User changedUser = new User();
+    /**
+     * Changes user in db with information in dto
+     *
+     * @param userInfoChangeDTO
+     * @param id
+     */
+    public void updateUserFromDto(UserInfoChangeDTO userInfoChangeDTO, Long id) {
+        User changedUser = getUserById(id);
         changedUser.setName(userInfoChangeDTO.getName());
         changedUser.setEmail(userInfoChangeDTO.getEmail());
         changedUser.setLocation(userInfoChangeDTO.getLocation());
@@ -48,22 +72,35 @@ public class UserPageService {
         userRepo.save(changedUser);
     }
 
-    public User getUserByOauth2ClientRegistrationId(String registrationId, String username) {
+    /**
+     * Gets user from DB by OAuth2
+     *
+     * @param registrationId
+     * @param OAuth2Id
+     * @return
+     */
+    public User getUserByOauth2ClientRegistrationId(String registrationId, String OAuth2Id) {
         switch (registrationId) {
-            case "yandex":
-                return userRepo.findByYandexId(username).orElseThrow(() ->
-                        new UserNotFoundException("User with Oauth2 id=" + username + "not found"));
-            case "google":
-                return userRepo.findByGoogleId(username).orElseThrow(() ->
-                        new UserNotFoundException("User with Oauth2 id=" + username + "not found"));
-            case "facebook":
-                return userRepo.findByFacebookId(username).orElseThrow(() ->
-                        new UserNotFoundException("User with Oauth2 id=" + username + "not found"));
+            case yandex:
+                return userRepo.findByYandexId(OAuth2Id).orElseThrow(() ->
+                        new UserNotFoundException(userWithOauthId + OAuth2Id + notFound));
+            case google:
+                return userRepo.findByGoogleId(OAuth2Id).orElseThrow(() ->
+                        new UserNotFoundException(userWithOauthId + OAuth2Id + notFound));
+            case facebook:
+                return userRepo.findByFacebookId(OAuth2Id).orElseThrow(() ->
+                        new UserNotFoundException(userWithOauthId + OAuth2Id + notFound));
             default:
                 throw new ClientRegistrationIdNotFound("Unknown client registration id= " + registrationId);
         }
     }
 
+    /**
+     * Checks that`s user by principal is user by id
+     *
+     * @param principal
+     * @param id
+     */
     public void checkUserInfoChangeAccess(Principal principal, Long id) {
         String principalName = principal.getName();
         if (principal instanceof OAuth2AuthenticationToken) {
@@ -80,22 +117,28 @@ public class UserPageService {
         }
     }
 
+    /**
+     * Checks if user trying delete all his Auth information
+     *
+     * @param clientName
+     * @param id
+     */
     public void checkLostAuth(String clientName, Long id) {
-        User user = userRepo.findById(id).get();
+        User user = userRepo.findById(id).orElseThrow(() -> new UserNotFoundException("User with id = " + id.toString() + notFound));
         boolean isGoogleEmpty = user.getGoogleId().isEmpty();
         boolean isYandexEmpty = user.getYandexId().isEmpty();
         boolean isFacebookEmpty = user.getFacebookId().isEmpty();
         boolean isBasicEmpty = user.getPassword().isEmpty();
         switch (clientName) {
-            case "google":
+            case google:
                 if (isYandexEmpty && isFacebookEmpty && isBasicEmpty)
                     throw new LostInformationAboutUserException("can`t delete google oauth2");
                 break;
-            case "yandex":
+            case yandex:
                 if (isGoogleEmpty && isFacebookEmpty && isBasicEmpty)
                     throw new LostInformationAboutUserException("can`t delete yandex oauth2");
                 break;
-            case "facebook":
+            case facebook:
                 if (isYandexEmpty && isGoogleEmpty && isBasicEmpty)
                     throw new LostInformationAboutUserException("can`t delete facebook oauth2");
                 break;
@@ -104,18 +147,26 @@ public class UserPageService {
         }
     }
 
+    /**
+     * Deletes user`s oauth2 account
+     *
+     * @param clientName
+     * @param name
+     */
     public void deleteOauthFromUser(String clientName, String name) {
         User user = getUserByOauth2ClientRegistrationId(clientName, name);
         switch (clientName) {
-            case "yandex":
+            case yandex:
                 user.setYandexId(null);
                 break;
-            case "google":
+            case google:
                 user.setGoogleId(null);
                 break;
-            case "facebook":
+            case facebook:
                 user.setFacebookId(null);
                 break;
+            default:
+                throw new ClientRegistrationIdNotFound("unknown client registration id = " + clientName);
         }
         userRepo.save(user);
     }
