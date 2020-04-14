@@ -37,7 +37,7 @@ import java.util.List;
 @EnableOAuth2Client
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    private final String DEFAULT_REDIRECT="/home";
+    private final String DEFAULT_REDIRECT = "/home";
 
     @Value("${google.id}")
     private String googleClientId;
@@ -94,7 +94,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .oauth2Login()
                 .clientRegistrationRepository(clientRegistrationRepository())
                 .authorizedClientService(oAuth2AuthorizedClientService())
-                .defaultSuccessUrl("/be/oauth/registration")
+                .defaultSuccessUrl("/be/oauth/registration",true)
                 .and()
                 .logout()
                 .logoutUrl("/logout")
