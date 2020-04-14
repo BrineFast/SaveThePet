@@ -1,10 +1,13 @@
 package com.savethepet.controller;
 
+import com.savethepet.exception_handlers.Exception.AccountAlreadyUsingException;
+import com.savethepet.exception_handlers.Exception.ClientRegistrationIdNotFound;
 import com.savethepet.model.dao.UserRepo;
 import com.savethepet.model.entity.User;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -29,48 +32,108 @@ import java.security.Principal;
 @RestController
 public class OAuth2Controller {
 
-    public static boolean IS_NEW_OAUTH;
+    /**
+     * Flag that shows, what controller need to do - Handle new user or Update existing user
+     * Sets to true by UserPageController
+     *
+     * @see com.savethepet.controller.UserPageController#addOauth2(Principal, Long, String)
+     */
+    public static boolean IS_LINK_NEW_OAUTH = false;
 
-    public static Long New_OAUTH_USER_ID;
+    /**
+     * Id of user to link the new OAuth to
+     * Sets by UserPageController
+     *
+     * @see com.savethepet.controller.UserPageController#addOauth2(Principal, Long, String)
+     */
+    public static Long NEW_OAUTH_USER_ID;
 
 
     @Value("${reroute.url}")
     private String rerouteURL;
 
     @Autowired
-    UserRepo userRepo;
+    private UserRepo userRepo;
 
-    @ApiOperation("Register user from Ouath")
-    @ApiResponse(code = 301, message = "redirected to frontend")
+    /**
+     * Adds in DB User from OAuth2 or link new OAuth2 account to existing user
+     *
+     * @param principal
+     * @return
+     */
+    @ApiOperation("Register user from OAuth or Adds new OAuth to existing user")
+    @ApiResponses(value = {
+            @ApiResponse(code = 302, message = "redirected to frontend"),
+            @ApiResponse(code = 406, message = "Attempt to link OAuth account that already in use"),
+            @ApiResponse(code = 404, message = "Attempt to use unknown OAuth2 client")
+    }
+    )
     @Transactional
     @GetMapping("/be/oauth/registration")
     public ResponseEntity<Void> addUserFromOauth2(@ApiIgnore Principal principal) {
         OAuth2User userFromOauth = ((OAuth2AuthenticationToken) principal).getPrincipal();
-        User newUser = new User();
         String clientRegistrationId = ((OAuth2AuthenticationToken) principal).getAuthorizedClientRegistrationId();
         String name = principal.getName();
-        User newUser = new User();
         switch (clientRegistrationId) {
             case "google":
                 if (userRepo.findByGoogleId(name).isEmpty()) {
-
+                    if (IS_LINK_NEW_OAUTH) {
+                        User userForNewOauth = userRepo.findById(NEW_OAUTH_USER_ID).get();
+                        userForNewOauth.setGoogleId(name);
+                        userRepo.save(userForNewOauth);
+                        IS_LINK_NEW_OAUTH = false;
+                    } else {
+                        User newUser = new User();
+                        newUser.setName(userFromOauth.getAttribute("name"));
+                        newUser.setGoogleId(name);
+                        userRepo.save(newUser);
+                    }
+                } else if (IS_LINK_NEW_OAUTH) {
+                    IS_LINK_NEW_OAUTH = false;
+                    throw new AccountAlreadyUsingException("google account with id = " + name + "already exists");
                 }
-        }
-        if (clientRegistrationId.equals("google") && userRepo.findByGoogleId(principal.getName()).isEmpty()) {
-            newUser.setName(userFromOauth.getAttribute("name"));
-            newUser.setGoogleId(principal.getName());
-            userRepo.save(newUser);
-        } else if (clientRegistrationId.equals("facebook") && userRepo.findByFacebookId(principal.getName()).isEmpty()) {
-            newUser.setName(userFromOauth.getAttribute("name"));
-            newUser.setFacebookId(principal.getName());
-            userRepo.save(newUser);
-        } else if (clientRegistrationId.equals("yandex") && userRepo.findByYandexId(principal.getName()).isEmpty()) {
-            newUser.setName(userFromOauth.getAttribute("real_name"));
-            newUser.setYandexId(principal.getName());
-            userRepo.save(newUser);
+                break;
+            case "facebook":
+                if (userRepo.findByFacebookId(name).isEmpty()) {
+                    if (IS_LINK_NEW_OAUTH) {
+                        User userForNewOauth = userRepo.findById(NEW_OAUTH_USER_ID).get();
+                        userForNewOauth.setFacebookId(name);
+                        userRepo.save(userForNewOauth);
+                        IS_LINK_NEW_OAUTH = false;
+                    } else {
+                        User newUser = new User();
+                        newUser.setName(userFromOauth.getAttribute("name"));
+                        newUser.setFacebookId(name);
+                        userRepo.save(newUser);
+                    }
+                } else if (IS_LINK_NEW_OAUTH) {
+                    IS_LINK_NEW_OAUTH = false;
+                    throw new AccountAlreadyUsingException("facebook account with id = " + name + "already exists");
+                }
+                break;
+            case "yandex":
+                if (userRepo.findByYandexId(name).isEmpty()) {
+                    if (IS_LINK_NEW_OAUTH) {
+                        User userForNewOauth = userRepo.findById(NEW_OAUTH_USER_ID).get();
+                        userForNewOauth.setYandexId(name);
+                        userRepo.save(userForNewOauth);
+                    } else {
+                        User newUser = new User();
+                        newUser.setName(userFromOauth.getAttribute("name"));
+                        newUser.setYandexId(name);
+                        userRepo.save(newUser);
+                        IS_LINK_NEW_OAUTH = false;
+                    }
+                } else if (IS_LINK_NEW_OAUTH) {
+                    IS_LINK_NEW_OAUTH = false;
+                    throw new AccountAlreadyUsingException("google account with id = " + name + "already exists");
+                }
+                break;
+            default:
+                throw new ClientRegistrationIdNotFound("Unknown client registration id" + clientRegistrationId);
         }
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.setLocation(URI.create(rerouteURL + "/home"));
-        return new ResponseEntity<>(responseHeaders, HttpStatus.MOVED_PERMANENTLY);
+        return new ResponseEntity<>(responseHeaders, HttpStatus.FOUND);
     }
 }
