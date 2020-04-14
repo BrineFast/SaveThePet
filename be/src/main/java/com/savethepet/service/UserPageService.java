@@ -1,5 +1,7 @@
 package com.savethepet.service;
 
+import com.savethepet.exception_handlers.Exception.ClientRegistrationIdNotFound;
+import com.savethepet.exception_handlers.Exception.LostInformationAboutUserException;
 import com.savethepet.exception_handlers.Exception.NotEnoughPermissionsException;
 import com.savethepet.exception_handlers.Exception.UserNotFoundException;
 import com.savethepet.model.dao.UserRepo;
@@ -31,7 +33,7 @@ public class UserPageService {
                 new UserNotFoundException("User with email=" + email + "not found"));
     }
 
-    private User getUserByOauth2ClientRegistrationId(String registrationId, String username) {
+    public User getUserByOauth2ClientRegistrationId(String registrationId, String username) {
         switch (registrationId) {
             case "yandex":
                 return userRepo.findByYandexId(username).orElseThrow(() ->
@@ -43,7 +45,7 @@ public class UserPageService {
                 return userRepo.findByFacebookId(username).orElseThrow(() ->
                         new UserNotFoundException("User with Oauth2 id=" + username + "not found"));
             default:
-                throw new RuntimeException("Unknown client registration id= " + registrationId);
+                throw new ClientRegistrationIdNotFound("Unknown client registration id= " + registrationId);
         }
     }
 
@@ -60,6 +62,30 @@ public class UserPageService {
             if (!userFromDBByEmail.getId().equals(id))
                 throw new NotEnoughPermissionsException(
                         "User with id " + userFromDBByEmail.getId() + " can`t change info user with id " + id.toString());
+        }
+    }
+
+    public void checkLostAuth(String clientName, Long id) {
+        User user = userRepo.findById(id).get();
+        boolean isGoogleEmpty = user.getGoogleId().isEmpty();
+        boolean isYandexEmpty = user.getYandexId().isEmpty();
+        boolean isFacebookEmpty = user.getFacebookId().isEmpty();
+        boolean isBasicEmpty = user.getPassword().isEmpty();
+        switch (clientName) {
+            case "google":
+                if (isYandexEmpty && isFacebookEmpty && isBasicEmpty)
+                    throw new LostInformationAboutUserException("can`t delete google oauth2");
+                break;
+            case "yandex":
+                if (isGoogleEmpty && isFacebookEmpty && isBasicEmpty)
+                    throw new LostInformationAboutUserException("can`t delete yandex oauth2");
+                break;
+            case "facebook":
+                if (isYandexEmpty && isGoogleEmpty && isBasicEmpty)
+                    throw new LostInformationAboutUserException("can`t delete facebook oauth2");
+                break;
+            default:
+                throw new ClientRegistrationIdNotFound("unknown client registration id = " + clientName);
         }
     }
 }

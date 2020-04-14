@@ -51,7 +51,10 @@ public class UserPageController {
      * @return
      */
     @ApiOperation("Return info about user")
-    @ApiResponse(code = 200, message = "User info returned")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "User info returned"),
+            @ApiResponse(code = 404, message = "User with this that id not exists")
+    })
     @GetMapping("/user/{user_id}")
     public ResponseEntity<UserInfoDTO> getUserInfo(@PathVariable("user_id") Long id) {
         User user = userPageService.getUserById(id);
@@ -82,7 +85,8 @@ public class UserPageController {
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Info changed successfully"),
             @ApiResponse(code = 403, message = "Current user don`t have access to change this info"),
-            @ApiResponse(code = 400, message = "The transmitted information is not valid")
+            @ApiResponse(code = 406, message = "The transmitted information is not valid"),
+            @ApiResponse(code = 404, message = "User with this that id not exists")
     }
     )
     @PatchMapping("/user/{user_id}")
@@ -100,15 +104,62 @@ public class UserPageController {
         return new ResponseEntity(responseHeaders, HttpStatus.OK);
     }
 
+    /**
+     * Links to user new OAuth2 account
+     *
+     * @param principal
+     * @param id
+     * @param clientName
+     * @return
+     */
+    @ApiOperation("Links to user new OAuth2 account")
+    @ApiResponses(value = {
+            @ApiResponse(code = 302, message = "redirected to oauth2 controller"),
+            @ApiResponse(code = 404, message = "User with this that id not exists"),
+            @ApiResponse(code = 403, message = "Current user don`t have access to change this info"),
+            @ApiResponse(code = 400, message = "Unknown client id")
+    })
     @PatchMapping("/user/{user_id}/oauth/{ClientName}")
     @Transactional
-    public ResponseEntity addOauth2(@ApiIgnore Principal principal, @ApiIgnore @PathVariable("user_id") Long id, @PathVariable("ClientName") String clientName) {
+    public ResponseEntity addOauth2(@ApiIgnore Principal principal, @PathVariable("user_id") Long id, @PathVariable("ClientName") String clientName) {
         userPageService.checkUserInfoChangeAccess(principal, id);
-        OAuth2Controller.New_OAUTH_USER_ID = id;
-        OAuth2Controller.IS_NEW_OAUTH = true;
+        OAuth2Controller.NEW_OAUTH_USER_ID = id;
+        OAuth2Controller.IS_LINK_NEW_OAUTH = true;
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.setLocation(URI.create("http://localhost:8080/oauth2/authorization/" + clientName));
-        return new ResponseEntity(responseHeaders, HttpStatus.MOVED_PERMANENTLY);
+        return new ResponseEntity(responseHeaders, HttpStatus.FOUND);
     }
 
+    /**
+     * Delete OAuth2 account from user
+     *
+     * @param principal
+     * @param id
+     * @param clientName
+     */
+    @ApiOperation("deletes oauth2 account from user")
+    @ApiResponses(value = {
+            @ApiResponse(code = 404, message = "User with this that id not exists"),
+            @ApiResponse(code = 403, message = "Current user don`t have access to change this info"),
+            @ApiResponse(code = 400, message = "Unknown client id"),
+            @ApiResponse(code = 406, message = "Can`t delete this OAuth2 because user lost access to account")
+    })
+    @DeleteMapping("/user/{user_id}/oauth/{ClientName}")
+    public void deleteOauth2(@ApiIgnore Principal principal, @PathVariable("user_id") Long id, @PathVariable("ClientName") String clientName) {
+        userPageService.checkUserInfoChangeAccess(principal, id);
+        userPageService.checkLostAuth(clientName, id);
+        User user = userPageService.getUserByOauth2ClientRegistrationId(clientName, principal.getName());
+        switch (clientName) {
+            case "yandex":
+                user.setYandexId(null);
+                break;
+            case "google":
+                user.setGoogleId(null);
+                break;
+            case "facebook":
+                user.setFacebookId(null);
+                break;
+        }
+        userRepo.save(user);
+    }
 }
