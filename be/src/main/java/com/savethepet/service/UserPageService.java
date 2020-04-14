@@ -151,7 +151,7 @@ public class UserPageService {
      * Deletes user`s oauth2 account
      *
      * @param clientName
-     * @param name
+     * @param id
      */
     public void deleteOauthFromUser(String clientName, Long id) {
         User user = getUserById(id);
