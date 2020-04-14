@@ -89,6 +89,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .anyRequest().authenticated()
                 .and()
                 .formLogin()
+                .loginPage("http://localhost:4200/login")
                 .defaultSuccessUrl(DEFAULT_REDIRECT)
                 .and()
                 .oauth2Login()
@@ -98,7 +99,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .logout()
                 .logoutUrl("/logout")
-                .logoutSuccessUrl("/login")
+                .logoutSuccessUrl("http://localhost:4200/login")
                 .invalidateHttpSession(true)
                 .deleteCookies("JSESSIONID");
     }
