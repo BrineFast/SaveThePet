@@ -5,8 +5,10 @@ import com.savethepet.exception_handlers.Exception.LostInformationAboutUserExcep
 import com.savethepet.exception_handlers.Exception.NotEnoughPermissionsException;
 import com.savethepet.exception_handlers.Exception.UserNotFoundException;
 import com.savethepet.model.dao.UserRepo;
+import com.savethepet.model.dto.user.UserInfoChangeDTO;
 import com.savethepet.model.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +25,9 @@ public class UserPageService {
     @Autowired
     private UserRepo userRepo;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     public User getUserById(Long id) {
         return userRepo.findById(id).orElseThrow(() ->
                 new UserNotFoundException("User with id=" + id.toString() + "not found"));
@@ -31,6 +36,16 @@ public class UserPageService {
     private User getUserByEmail(String email) {
         return userRepo.findByEmail(email).orElseThrow(() ->
                 new UserNotFoundException("User with email=" + email + "not found"));
+    }
+
+    public void updateUserFromDto(UserInfoChangeDTO userInfoChangeDTO) {
+        User changedUser = new User();
+        changedUser.setName(userInfoChangeDTO.getName());
+        changedUser.setEmail(userInfoChangeDTO.getEmail());
+        changedUser.setLocation(userInfoChangeDTO.getLocation());
+        changedUser.setPhoneNumber(userInfoChangeDTO.getPhoneNumber());
+        changedUser.setPassword(passwordEncoder.encode(userInfoChangeDTO.getPassword()));
+        userRepo.save(changedUser);
     }
 
     public User getUserByOauth2ClientRegistrationId(String registrationId, String username) {
@@ -87,5 +102,21 @@ public class UserPageService {
             default:
                 throw new ClientRegistrationIdNotFound("unknown client registration id = " + clientName);
         }
+    }
+
+    public void deleteOauthFromUser(String clientName, String name) {
+        User user = getUserByOauth2ClientRegistrationId(clientName, name);
+        switch (clientName) {
+            case "yandex":
+                user.setYandexId(null);
+                break;
+            case "google":
+                user.setGoogleId(null);
+                break;
+            case "facebook":
+                user.setFacebookId(null);
+                break;
+        }
+        userRepo.save(user);
     }
 }

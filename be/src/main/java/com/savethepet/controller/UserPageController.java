@@ -41,9 +41,6 @@ public class UserPageController {
     @Autowired
     private UserPageService userPageService;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
     /**
      * Returns Info about User
      *
@@ -56,21 +53,18 @@ public class UserPageController {
             @ApiResponse(code = 404, message = "User with this that id not exists")
     })
     @GetMapping("/user/{user_id}")
-    public ResponseEntity<UserInfoDTO> getUserInfo(@PathVariable("user_id") Long id) {
+    public UserInfoDTO getUserInfo(@PathVariable("user_id") Long id) {
         User user = userPageService.getUserById(id);
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.setLocation(URI.create(rerouteURL + "/user/" + id.toString()));
-        return ResponseEntity.status(HttpStatus.OK)
-                .headers(responseHeaders)
-                .body(
-                        UserInfoDTO.builder()
-                                .name(user.getName())
-                                .location(user.getLocation())
-                                .pets(user.getPets())
-                                .phoneNumber(user.getPhoneNumber())
-                                .email(user.getEmail())
-                                .img(user.getImg())
-                                .build());
+        return UserInfoDTO.builder()
+                .name(user.getName())
+                .location(user.getLocation())
+                .pets(user.getPets())
+                .phoneNumber(user.getPhoneNumber())
+                .email(user.getEmail())
+                .img(user.getImg())
+                .build();
     }
 
     /**
@@ -90,18 +84,9 @@ public class UserPageController {
     }
     )
     @PatchMapping("/user/{user_id}")
-    public ResponseEntity changeUserInfo(@ApiIgnore Principal principal, @PathVariable("user_id") Long id, @RequestBody @Valid UserInfoChangeDTO userInfoChangeDTO) {
+    public void changeUserInfo(@ApiIgnore Principal principal, @PathVariable("user_id") Long id, @RequestBody @Valid UserInfoChangeDTO userInfoChangeDTO) {
         userPageService.checkUserInfoChangeAccess(principal, id);
-        User changedUser = new User();
-        changedUser.setName(userInfoChangeDTO.getName());
-        changedUser.setEmail(userInfoChangeDTO.getEmail());
-        changedUser.setLocation(userInfoChangeDTO.getLocation());
-        changedUser.setPhoneNumber(userInfoChangeDTO.getPhoneNumber());
-        changedUser.setPassword(passwordEncoder.encode(userInfoChangeDTO.getPassword()));
-        userRepo.save(changedUser);
-        HttpHeaders responseHeaders = new HttpHeaders();
-        responseHeaders.setLocation(URI.create(rerouteURL + "/user/" + id.toString()));
-        return new ResponseEntity(responseHeaders, HttpStatus.OK);
+        userPageService.updateUserFromDto(userInfoChangeDTO);
     }
 
     /**
@@ -148,18 +133,6 @@ public class UserPageController {
     public void deleteOauth2(@ApiIgnore Principal principal, @PathVariable("user_id") Long id, @PathVariable("ClientName") String clientName) {
         userPageService.checkUserInfoChangeAccess(principal, id);
         userPageService.checkLostAuth(clientName, id);
-        User user = userPageService.getUserByOauth2ClientRegistrationId(clientName, principal.getName());
-        switch (clientName) {
-            case "yandex":
-                user.setYandexId(null);
-                break;
-            case "google":
-                user.setGoogleId(null);
-                break;
-            case "facebook":
-                user.setFacebookId(null);
-                break;
-        }
-        userRepo.save(user);
+        userPageService.deleteOauthFromUser(clientName, principal.getName());
     }
 }
