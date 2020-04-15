@@ -15,10 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 
@@ -71,6 +68,7 @@ public class AuthController {
             @ApiResponse(code = 200, message = "User saved successfully"),
             @ApiResponse(code = 406, message = "User already exists")
     })
+    @CrossOrigin(origins = "http://localhost:4200", maxAge = 3600)
     @PostMapping("/registration")
     public ResponseEntity<String> addUser(@Validated @RequestBody registrationUserDTO registrationDto) {
         HttpHeaders responseHeaders = new HttpHeaders();
@@ -80,7 +78,7 @@ public class AuthController {
             User userFromDto = new User();
             userFromDto.setEmail(registrationDto.getEmail());
             userFromDto.setPassword(passwordEncoder.encode(registrationDto.getPassword()));
-            userFromDto.setName(registrationDto.getPassword());
+            userFromDto.setName(registrationDto.getName());
             userRepo.save(userFromDto);
         }
         responseHeaders.setLocation(URI.create(rerouteURL + "/login"));

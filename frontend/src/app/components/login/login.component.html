@@ -4,7 +4,7 @@
        Login
    </h2> 
    
-   <form class="login__form">
+   <form class="login__form" [formGroup]="profileForm" (ngSubmit)="onSubmit($event)">
        <mat-form-field class='login__input' appearance="outline">
            <mat-label>Login</mat-label>
            <input matInput type="text" formControlName="login" email required >
@@ -22,7 +22,7 @@
        <!--<p *ngIf="isError" class='login__error-message'>Wrong login or password</p>-->
        <div class="login__control">
            <button class="login__login-button" type="submit">Sign in</button>
-           <a class="login__forgot-button" routerLink="/forgot">Forgot password</a>
+           <!--<a class="login__forgot-button" routerLink="/forgot">Forgot password</a>-->
        </div>
    </form>
    <div class="login__auth-container">
