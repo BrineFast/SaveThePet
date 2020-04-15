@@ -95,7 +95,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .oauth2Login()
                 .clientRegistrationRepository(clientRegistrationRepository())
                 .authorizedClientService(oAuth2AuthorizedClientService())
-                .defaultSuccessUrl("/be/oauth/registration")
+                .defaultSuccessUrl("/be/oauth/registration", true)
                 .and()
                 .logout()
                 .logoutUrl("/logout")
