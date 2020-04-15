@@ -5,6 +5,7 @@ import { map, catchError } from 'rxjs/operators';
 import { HttpService } from '../http.service'
 import { User } from '../../user'
 import { NgForm } from '@angular/forms'
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-login',
@@ -15,7 +16,10 @@ import { NgForm } from '@angular/forms'
 export class LoginComponent /*implements OnInit*/ {
 
   constructor(private fb: FormBuilder,
-    private http: HttpService) { }
+    private http: HttpService,
+    private router: Router
+    ) { }
+
 
   profileForm = this.fb.group({
     login: ['', Validators.required],
