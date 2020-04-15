@@ -27,12 +27,12 @@ export class LoginComponent /*implements OnInit*/ {
   });
 
   ngOnInit(): void {
-    console.log(12);
+    
 
   }
 
   onSubmit(e) {
-    console.log(123);
-    this.http.createAccount(this.profileForm.value.login, this.profileForm.value.password).subscribe();
+    console.log("соси хуй");
+    this.http.login(this.profileForm.value.login, this.profileForm.value.password).subscribe();
   }
 }

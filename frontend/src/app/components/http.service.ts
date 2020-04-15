@@ -8,13 +8,32 @@ export class HttpService {
 
   constructor(private http: HttpClient) { }
 
-  createAccount(login, password) {
+  login(login, password) {
     const request = {
       email: login,
       password: password,
-      name: "Секслер"
-    };
-    return this.http.post(`http://localhost:8080/registration`, request, {headers:{'Content-Type': 'application/json'}});
+     };
+     return this.http.post(`http://localhost:8080/registration`, request, {headers:{'Content-Type': 'application/json'}});
   }
+    
 
-}
+  register(login,fullname,password)
+{
+  const request = {
+      email: login,
+      name: fullname, 
+      password: password,
+     };
+     return this.http.post(`http://localhost:8080/registration`, request, {headers:{'Content-Type': 'application/json'}});
+    }
+
+}  
+
+  
+
+
+
+
+   
+
+
