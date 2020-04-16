@@ -21,6 +21,7 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PUBLIC, force = true)
 @Entity
+@Table(name = "users")
 public class User implements UserDetails {
 
     @Id
