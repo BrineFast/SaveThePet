@@ -57,6 +57,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Value("${facebook.secret}")
     private String facebookClientSecret;
 
+    @Value("${admin.account.username}")
+    private String adminUsername;
+
+    @Value("${admin.account.password}")
+    private String adminPassword;
+
     @Autowired
     private CustomUserService customUserService;
 
@@ -94,7 +100,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .oauth2Login()
                 .clientRegistrationRepository(clientRegistrationRepository())
                 .authorizedClientService(oAuth2AuthorizedClientService())
-                .defaultSuccessUrl("/be/oauth/registration",true)
+                .defaultSuccessUrl("/be/oauth/registration", true)
                 .and()
                 .logout()
                 .logoutUrl("/logout")
@@ -114,7 +120,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth
                 .userDetailsService(customUserService)
-                .passwordEncoder(passwordEncoder());
+                .passwordEncoder(passwordEncoder())
+                .and()
+                .inMemoryAuthentication().withUser(adminUsername).password(passwordEncoder().encode(adminPassword));
     }
 
     /**

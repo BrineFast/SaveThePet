@@ -21,6 +21,7 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PUBLIC, force = true)
 @Entity
+@Table(name = "users")
 public class User implements UserDetails {
 
     @Id
@@ -39,18 +40,23 @@ public class User implements UserDetails {
 
     private String name;
 
+    private String phoneNumber;
+
+    private String location;
+
     private String img = "default img";
 
     private boolean active = true;
 
-    @ElementCollection(targetClass = Role.class, fetch = FetchType.EAGER)
-    @CollectionTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"))
     @Enumerated(EnumType.STRING)
-    private Set<Role> roles = Collections.singleton(Role.USER);
+    private Role role = Role.USER;
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    private Set<Pet> pets;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return roles;
+        return Collections.singleton(role);
     }
 
     @Override
