@@ -17,6 +17,8 @@ import org.springframework.security.oauth2.client.registration.ClientRegistratio
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.oauth2.client.registration.InMemoryClientRegistrationRepository;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableOAuth2Client;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import javax.annotation.PostConstruct;
 import java.util.ArrayList;
@@ -35,9 +37,12 @@ import java.util.List;
 @Configuration
 @EnableWebSecurity
 @EnableOAuth2Client
-public class SecurityConfig extends WebSecurityConfigurerAdapter {
+public class SecurityConfig extends WebSecurityConfigurerAdapter implements WebMvcConfigurer {
 
     private final String DEFAULT_REDIRECT = "/home";
+
+    @Value("${reroute.url}")
+    private String rerouteURL;
 
     @Value("${google.id}")
     private String googleClientId;
@@ -82,6 +87,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http
                 .csrf()
                 .disable()
+                .cors()
+                .and()
                 .authorizeRequests()
                 .antMatchers(
                         DEFAULT_REDIRECT,
@@ -123,6 +130,18 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .passwordEncoder(passwordEncoder())
                 .and()
                 .inMemoryAuthentication().withUser(adminUsername).password(passwordEncoder().encode(adminPassword)).roles("USER");
+    }
+
+    /**
+     * Configure for Cross Origin Requests
+     *
+     * @param registry
+     */
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping("/**")
+                .allowedOrigins(rerouteURL)
+                .allowedMethods("*");
     }
 
     /**
