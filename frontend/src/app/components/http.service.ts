@@ -13,7 +13,7 @@ export class HttpService {
       email: login,
       password: password,
      };
-     return this.http.post(`http://localhost:8080/registration`, request, {headers:{'Content-Type': 'application/json'}});
+     return this.http.post(`http://localhost:8080/registration`, request, {headers:{'Content-Type': 'multipart/form-data'}});
   }
     
 
