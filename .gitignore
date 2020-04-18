@@ -72,3 +72,4 @@ $RECYCLE.BIN/
 
 #Frontend ignore (angular)
 node_modules/
+be/
