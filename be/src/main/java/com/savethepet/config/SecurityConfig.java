@@ -17,6 +17,8 @@ import org.springframework.security.oauth2.client.registration.ClientRegistratio
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.oauth2.client.registration.InMemoryClientRegistrationRepository;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableOAuth2Client;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -102,7 +104,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter implements WebM
                 .anyRequest().authenticated()
                 .and()
                 .formLogin()
-                .defaultSuccessUrl(rerouteURL + DEFAULT_REDIRECT, true)
+                .failureHandler(customAuthenticationFailureHandler())
+                .successHandler(customAuthenticationSuccessHandler())
                 .and()
                 .oauth2Login()
                 .clientRegistrationRepository(clientRegistrationRepository())
@@ -180,5 +183,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter implements WebM
     public OAuth2AuthorizedClientService oAuth2AuthorizedClientService() {
         return new
                 InMemoryOAuth2AuthorizedClientService(clientRegistrationRepository());
+    }
+
+    @Bean
+    public AuthenticationFailureHandler customAuthenticationFailureHandler() {
+        return new CustomAuthenticationFailureHandler();
+    }
+
+    @Bean
+    public AuthenticationSuccessHandler customAuthenticationSuccessHandler() {
+        return new CustomAuthenticationSuccessHandler();
     }
 }
