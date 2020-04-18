@@ -102,7 +102,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter implements WebM
                 .anyRequest().authenticated()
                 .and()
                 .formLogin()
-                .defaultSuccessUrl(DEFAULT_REDIRECT)
+                .defaultSuccessUrl(rerouteURL + DEFAULT_REDIRECT, true)
                 .and()
                 .oauth2Login()
                 .clientRegistrationRepository(clientRegistrationRepository())
