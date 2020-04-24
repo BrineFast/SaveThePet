@@ -69,3 +69,6 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
+
+#Frontend ignore (angular)
+node_modules/

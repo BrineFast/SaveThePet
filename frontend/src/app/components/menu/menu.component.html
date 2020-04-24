@@ -1,0 +1,14 @@
+<div class='side-menu__wrapper'>
+    <div class="side-menu app__side-menu">
+        <a 
+            class="side-menu__item" 
+            *ngFor="let item of menuItems; let index = index"
+            [ngClass]="{'side-menu__item_active' : item.isActive}"
+            (click)='changeItem(index)'
+            [routerLink]="item.path"
+        >
+        <fa-icon class='side-menu__item-icon' [icon]="item.icon"></fa-icon>
+        {{item.title}}</a>
+    </div>
+    <!--<button class='side-menu__logout' (click)='logout()'>Log out</button>-->
+</div>
