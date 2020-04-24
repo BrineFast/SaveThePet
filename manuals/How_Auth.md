@@ -26,7 +26,7 @@ password
 4) Unfortunately response code will be 200 anyway. It will be fixed in next update
 ### Authentication via oAuth
 
-Go to endpoint  `/oauth2/authorization/code`, where code this is "google","yadnex" or "facebook" then enter the data from your account.
+Go to endpoint  `/oauth2/authorization/code`, where `code` this is "google","yadnex" or "facebook" then enter the data from your account.
 If authorization is successful, you will be redirected to endpoit `/home` and your data will be stored in the database in the `users` table, you can check it by SQL request.
 
 #### Note
