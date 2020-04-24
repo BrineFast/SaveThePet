@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Location } from '@angular/common';
-import { faScroll, faQuestion, faAddressCard, faCogs } from '@fortawesome/free-solid-svg-icons';
+import { faMapMarked, faDog, faBoxOpen, faEnvelope } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-menu',
@@ -12,27 +12,27 @@ export class MenuComponent implements OnInit {
   menuItems = [
     {
       title: 'Tracks',
-      path: '/tracks/browse',
+      path: '',
       isActive: false,
-      icon: faScroll
+      icon: faMapMarked,
     },
     {
       title: 'Skill Sets',
-      path: '/skill-sets/browse',
+      path: '',
       isActive: false,
-      icon: faCogs
+      icon: faDog
     },
     {
-      title: 'Questions',
-      path: '/questions/browse',
+      title: 'Shelters',
+      path: '',
       isActive: false,
-      icon: faQuestion
+      icon: faBoxOpen
     },
     {
-      title: 'Interview Session',
-      path: '/interviews/browse',
+      title: 'Messages',
+      path: '',
       isActive: false,
-      icon: faAddressCard
+      icon: faEnvelope,
     }
   ]
   constructor(private router: Router, private location: Location) { }

@@ -1,6 +1,7 @@
 .side-menu {
+    background-color: #067b6f;
     height: 100%;
-    width: 200px;
+    width: 300px;
     display: inline-flex;
     flex-direction: column;
     transform: translateX(-2px);
@@ -25,20 +26,21 @@
     }
   
     .side-menu__item {
-      height: 40px;
-      width: 216px;
+      height: 70px;
+      width: 300px;
       font-weight: 400;
       display: flex;
       align-items: center;
       padding-left: 10px;
       cursor: pointer;
       text-decoration: none;
-      color: rgba(0, 0, 0, 0.87);
+      font-size: 40px;
+      color: rgba(255, 255, 255, 1);
     }
   
     .side-menu__item-icon {
       display: inline-block;
-      width: 30px;
+      width: 70px;
     }
   
     .side-menu__item_active {

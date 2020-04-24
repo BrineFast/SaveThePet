@@ -1,11 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { Validators } from '@angular/forms';
-import { map, catchError } from 'rxjs/operators';
 import { HttpService } from '../http.service'
-import { HttpClient, HttpEventType, HttpEvent } from '@angular/common/http';
-import { User } from '../../user'
-import { NgForm } from '@angular/forms'
+import { HttpEventType, HttpEvent } from '@angular/common/http';
 import { Router } from '@angular/router';
 
 @Component({
@@ -14,7 +11,7 @@ import { Router } from '@angular/router';
   styleUrls: ['./login.component.scss']
 })
 
-export class LoginComponent /*implements OnInit*/ {
+export class LoginComponent {
 
   constructor(private fb: FormBuilder,
     private http: HttpService,
@@ -33,18 +30,7 @@ export class LoginComponent /*implements OnInit*/ {
   }
 
   onSubmit(e) {
-    this.http.loginin(this.profileForm.value.login, this.profileForm.value.password).subscribe(
-      /*response =>
-      {
-        console.log(response);
-        console.log(response.status);
-        if (response.status == 200)
-        this.router.navigate(["/home"]);
-      },
-      err =>
-      {
-        console.log(err.status);
-      }*/
+    this.http.join(this.profileForm.value.login, this.profileForm.value.password).subscribe(
       (progressEvent: HttpEvent<any>) => {
         switch (progressEvent.type) {
           case HttpEventType.Response:

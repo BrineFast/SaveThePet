@@ -1,7 +1,5 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams, HttpHeaders, HttpRequest, HttpEventType } from '@angular/common/http';
-import {Observable, from} from 'rxjs';
-import { HttpResponse } from "@angular/common/http";
 import {Router} from "@angular/router";
 
 @Injectable({
@@ -14,7 +12,7 @@ export class HttpService {
     private router: Router,
     ){ }
 
-  loginin(login, password){
+  join(login, password){
     const body = new HttpParams()
     .set('username', login)
     .set('password', password);
@@ -23,22 +21,6 @@ export class HttpService {
 
     return this.http.request(req);
   }
-
-  login(login, password) {
-    const body = new HttpParams()
-    .set('username', login)
-    .set('password', password);
-
-  return this.http.post('http://localhost:8080/login',
-    body.toString(),
-    {
-      headers: new HttpHeaders()
-        .set('Content-Type', 'application/x-www-form-urlencoded')
-        , observe: 'response'
-    }
-  )
-  }
-    
 
   register(login,fullname,password)
 {
