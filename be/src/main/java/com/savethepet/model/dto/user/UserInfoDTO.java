@@ -1,0 +1,30 @@
+package com.savethepet.model.dto.user;
+
+import com.savethepet.model.entity.Pet;
+import lombok.Builder;
+import lombok.Data;
+
+import java.util.Set;
+
+/**
+ * DTO with user info
+ *
+ * @author Alexey Klimov
+ */
+@Builder
+@Data
+public class UserInfoDTO {
+
+    private String email;
+
+    private String name;
+
+    private String phoneNumber;
+
+    private String img;
+
+    private String location;
+
+    private Set<Pet> pets;
+
+}
