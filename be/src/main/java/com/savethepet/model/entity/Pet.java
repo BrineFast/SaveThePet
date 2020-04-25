@@ -1,5 +1,6 @@
 package com.savethepet.model.entity;
 
+import com.sun.istack.Nullable;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -20,4 +21,17 @@ public class Pet {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
+    @Nullable
+    private String breed;
+
+    @Nullable
+    private Gender gender;
+
+    private String img;
+
+    private Position position;
+
+    private Status status;
+
 }
