@@ -1,7 +1,7 @@
 package com.savethepet.model.dto.user;
 
 import com.savethepet.model.entity.Gender;
-import com.savethepet.model.entity.Position;
+import com.savethepet.model.entity.PetLocation;
 import com.savethepet.model.entity.Status;
 import lombok.Builder;
 import lombok.Data;
@@ -21,7 +21,7 @@ public class PetInfoDTO {
 
     private String img;
 
-    private Position position;
+    private PetLocation location;
 
     private Status status;
 

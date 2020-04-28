@@ -1,7 +1,9 @@
 package com.savethepet.model.entity;
 
 import com.sun.istack.Nullable;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
@@ -12,6 +14,8 @@ import javax.persistence.*;
  */
 @Entity
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class Pet {
 
     @Id
@@ -22,15 +26,13 @@ public class Pet {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @Nullable
     private String breed;
 
-    @Nullable
     private Gender gender;
 
     private String img;
 
-    private Position position;
+    private transient PetLocation location;
 
     private Status status;
 

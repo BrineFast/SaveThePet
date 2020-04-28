@@ -7,6 +7,6 @@ package com.savethepet.model.entity;
  */
 public enum Gender {
 
-    MAN, WOMAN
+    MALE, FEMALE
 
 }
