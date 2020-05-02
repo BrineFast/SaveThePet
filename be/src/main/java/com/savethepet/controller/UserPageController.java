@@ -1,5 +1,6 @@
 package com.savethepet.controller;
 
+import com.savethepet.model.dto.user.PetInfoDTO;
 import com.savethepet.model.dto.user.UserInfoChangeDTO;
 import com.savethepet.model.dto.user.UserInfoDTO;
 import com.savethepet.model.entity.User;
@@ -50,12 +51,30 @@ public class UserPageController {
         return UserInfoDTO.builder()
                 .name(user.getName())
                 .location(user.getLocation())
-                .pets(user.getPets())
                 .phoneNumber(user.getPhoneNumber())
                 .email(user.getEmail())
                 .img(user.getImg())
                 .build();
     }
+
+    /**
+     * Returns info about User's pets
+     *
+     * @param id
+     * @return
+     */
+/*    @ApiOperation("Return info about pet")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "User's pet info returned"),
+            @ApiResponse(code = 404, message = "User with this that id not exists")
+    })
+    @GetMapping("/user/{user_id}/pets")
+    public UserInfoDTO getUsersPetInfo(@PathVariable("user_id") Long id) {
+        User user = userPageService.getUserById(id);
+        return UserInfoDTO.builder()
+                .pets()
+                .build();
+    }*/
 
     /**
      * Changes info about user

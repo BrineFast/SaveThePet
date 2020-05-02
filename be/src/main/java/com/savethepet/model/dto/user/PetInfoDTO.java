@@ -3,6 +3,7 @@ package com.savethepet.model.dto.user;
 import com.savethepet.model.entity.Gender;
 import com.savethepet.model.entity.PetLocation;
 import com.savethepet.model.entity.Status;
+import com.savethepet.model.entity.User;
 import lombok.Builder;
 import lombok.Data;
 
@@ -14,6 +15,8 @@ import lombok.Data;
 @Builder
 @Data
 public class PetInfoDTO {
+
+    private User user;
 
     private String breed;
 

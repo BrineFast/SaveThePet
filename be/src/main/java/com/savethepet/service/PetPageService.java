@@ -5,11 +5,12 @@ import com.savethepet.exception_handlers.exception.UserNotFoundException;
 import com.savethepet.model.dao.PetRepo;
 import com.savethepet.model.dao.UserRepo;
 import com.savethepet.model.dto.user.PetInfoChangeDTO;
-import com.savethepet.model.dto.user.PetInfoDTO;
 import com.savethepet.model.entity.Pet;
 import com.savethepet.model.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.Set;
 
 /**
  * Service for Pet Page
@@ -41,6 +42,21 @@ public class PetPageService {
     }
 
     /**
+     * Gets Pet by User Id and throws exception if Pet didn`t found
+     *
+     * @param id
+     * @return
+     */
+/*    public Pet getPetByUserId(Long id) {
+        petRepo.findById(id).orElseThrow(() ->
+                new PetNotFoundException("Pet with id = " + id.toString() + notFound))
+        if (userRepo.findById(id).orElseThrow(() ->
+                new PetNotFoundException("Pet with id = " + id.toString() + notFound)).get
+        return petRepo.findById(id).orElseThrow(() ->
+                new PetNotFoundException("Pet with id = " + id.toString() + notFound));
+    }*/
+
+    /**
      * Changes pet in db with information from dto
      *
      * @param petInfoChangeDTO
@@ -58,10 +74,9 @@ public class PetPageService {
      * Adding the pet
      *
      * @param petInfoDTO
-//     * @param id
      * @param user_id
      */
-    public void addingPet(PetInfoDTO petInfoDTO, Long user_id) {
+    public void addingPet(PetInfoChangeDTO petInfoDTO, Long user_id) {
         User user = userRepo.findById(user_id).orElseThrow(() ->
                 new UserNotFoundException("User with id = " + user_id.toString() + notFound));
         Pet petFromDTO = new Pet();

@@ -2,7 +2,9 @@ package com.savethepet.controller;
 
 import com.savethepet.model.dto.user.PetInfoChangeDTO;
 import com.savethepet.model.dto.user.PetInfoDTO;
+import com.savethepet.model.dto.user.UserInfoDTO;
 import com.savethepet.model.entity.Pet;
+import com.savethepet.model.entity.User;
 import com.savethepet.service.PetPageService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -42,6 +44,7 @@ public class PetPageController {
     public PetInfoDTO getPetInfo(@PathVariable("pet_id") Long id) {
         Pet pet = petPageService.getPetById(id);
         return PetInfoDTO.builder()
+                .user(pet.getUser())
                 .breed(pet.getBreed())
                 .gender(pet.getGender())
                 .img(pet.getImg())
@@ -73,8 +76,7 @@ public class PetPageController {
     /**
      * Adding new pet
      *
-     * @param petInfoDTO
-//     * @param id
+     * @param petInfoChangeDTO
      * @param user_id
      */
     @ApiOperation("Adding the pet")
@@ -85,9 +87,9 @@ public class PetPageController {
             @ApiResponse(code = 400, message = "Unknown client id")
     })
     @PostMapping("/createPet")
-    public void addPet(@RequestBody @Valid PetInfoDTO petInfoDTO,
+    public void addPet(@RequestBody @Valid PetInfoChangeDTO petInfoChangeDTO,
                        Long user_id) {
-        petPageService.addingPet(petInfoDTO, user_id);
+        petPageService.addingPet(petInfoChangeDTO, user_id);
     }
 
     /**

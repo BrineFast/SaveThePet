@@ -20,8 +20,7 @@ public class PetInfoChangeDTO {
     @NotBlank
     @Length(max = 255)
     private String img;
-
-    @NotBlank
+    
     private PetLocation location;
 
     private Status status;
