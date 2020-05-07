@@ -80,7 +80,7 @@ public class AuthController {
             User userFromDto = new User();
             userFromDto.setEmail(registrationDto.getEmail());
             userFromDto.setPassword(passwordEncoder.encode(registrationDto.getPassword()));
-            userFromDto.setName(registrationDto.getPassword());
+            userFromDto.setName(registrationDto.getName());
             userRepo.save(userFromDto);
         }
         responseHeaders.setLocation(URI.create(rerouteURL + "/login"));
