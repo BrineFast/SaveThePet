@@ -2,9 +2,7 @@ package com.savethepet.controller;
 
 import com.savethepet.model.dto.user.PetInfoChangeDTO;
 import com.savethepet.model.dto.user.PetInfoDTO;
-import com.savethepet.model.dto.user.UserInfoDTO;
 import com.savethepet.model.entity.Pet;
-import com.savethepet.model.entity.User;
 import com.savethepet.service.PetPageService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -16,6 +14,7 @@ import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.Valid;
 import java.security.Principal;
+import java.util.List;
 
 /**
  * Controller to requests to info about Pet
@@ -54,6 +53,22 @@ public class PetPageController {
     }
 
     /**
+     * Returns info about user pets
+     *
+     * @param id
+     * @return
+     */
+    @ApiOperation("Return info about user pets")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "User info returned"),
+            @ApiResponse(code = 404, message = "User with this that id not exists")
+    })
+    @GetMapping("user/{user_id}/pets")
+    public List<Pet> getUserPets(@PathVariable("user_id") Long id) {
+        return petPageService.getPetsByUserId(id);
+    }
+
+    /**
      * Changes info about pet
      *
      * @param id
@@ -69,8 +84,27 @@ public class PetPageController {
     }
     )
     @PatchMapping("/pet/{pet_id}")
-    public void changePetInfo(@PathVariable("pet_id") Long id, @RequestBody @Valid PetInfoChangeDTO petInfoChangeDTO) {
+    public PetInfoChangeDTO changePetInfo(@PathVariable("pet_id") Long id, @RequestBody @Valid PetInfoChangeDTO petInfoChangeDTO) {
         petPageService.updatePetFromDto(petInfoChangeDTO, id);
+        return petInfoChangeDTO;
+    }
+
+    /**
+     * Adding new pet
+     *
+     *
+     * @param breed
+     */
+    @ApiOperation("Search by breed of pet")
+    @ApiResponses(value = {
+            @ApiResponse(code = 302, message = "Redirected"),
+            @ApiResponse(code = 404, message = "Pet with this that id not exists"),
+            @ApiResponse(code = 403, message = "Current user don`t have access to change this info"),
+            @ApiResponse(code = 400, message = "Unknown client id")
+    })
+    @GetMapping("/pet/{pet_id}/breed")
+    public List<Pet> getPetsBreed(String breed) {
+        return petPageService.getPetsFromBreed(breed);
     }
 
     /**
@@ -87,26 +121,26 @@ public class PetPageController {
             @ApiResponse(code = 400, message = "Unknown client id")
     })
     @PostMapping("/createPet")
-    public void addPet(@RequestBody @Valid PetInfoChangeDTO petInfoChangeDTO,
+    public PetInfoChangeDTO addPet(@RequestBody @Valid PetInfoChangeDTO petInfoChangeDTO,
                        Long user_id) {
         petPageService.addingPet(petInfoChangeDTO, user_id);
+        return petInfoChangeDTO;
     }
 
     /**
      * Delete pet
      *
      * @param principal
-     * @param id
+     * @param pet_id
      */
     @ApiOperation("Delete the pet")
     @ApiResponses(value = {
             @ApiResponse(code = 404, message = "Pet with this that id not exists"),
             @ApiResponse(code = 403, message = "Current user don`t have access to change this info"),
             @ApiResponse(code = 400, message = "Unknown client id"),
-            @ApiResponse(code = 406, message = "Can`t delete this pet because user lost access to account")
     })
     @DeleteMapping("/pet/{pet_id}")
-    public void deletePet(@ApiIgnore Principal principal, @PathVariable("pet_id") Long id) {
-        petPageService.deletePet(id);
+    public void deletePet(@ApiIgnore Principal principal, @PathVariable("pet_id") Long pet_id) {
+        petPageService.deletePet(pet_id);
     }
 }

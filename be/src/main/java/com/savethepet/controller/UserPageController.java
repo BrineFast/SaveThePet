@@ -1,6 +1,5 @@
 package com.savethepet.controller;
 
-import com.savethepet.model.dto.user.PetInfoDTO;
 import com.savethepet.model.dto.user.UserInfoChangeDTO;
 import com.savethepet.model.dto.user.UserInfoDTO;
 import com.savethepet.model.entity.User;
@@ -10,7 +9,6 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -56,25 +54,6 @@ public class UserPageController {
                 .img(user.getImg())
                 .build();
     }
-
-    /**
-     * Returns info about User's pets
-     *
-     * @param id
-     * @return
-     */
-/*    @ApiOperation("Return info about pet")
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "User's pet info returned"),
-            @ApiResponse(code = 404, message = "User with this that id not exists")
-    })
-    @GetMapping("/user/{user_id}/pets")
-    public UserInfoDTO getUsersPetInfo(@PathVariable("user_id") Long id) {
-        User user = userPageService.getUserById(id);
-        return UserInfoDTO.builder()
-                .pets()
-                .build();
-    }*/
 
     /**
      * Changes info about user
