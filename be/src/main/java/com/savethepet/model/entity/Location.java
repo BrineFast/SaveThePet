@@ -9,7 +9,7 @@ import lombok.Data;
  */
 
 @Data
-public class PetLocation {
+public class Location {
     private Long Width;
     private Long longitude;
 }

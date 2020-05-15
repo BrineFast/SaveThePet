@@ -1,7 +1,7 @@
 package com.savethepet.model.dto.pet;
 
 import com.savethepet.model.entity.Gender;
-import com.savethepet.model.entity.PetLocation;
+import com.savethepet.model.entity.Location;
 import com.savethepet.model.entity.Status;
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;
@@ -26,7 +26,7 @@ public class PetInfoChangeDTO {
     @Length(max = 255)
     private String img;
 
-    private PetLocation location;
+    private Location location;
 
     private Status status;
 

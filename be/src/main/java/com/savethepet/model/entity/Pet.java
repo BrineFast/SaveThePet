@@ -21,13 +21,15 @@ public class Pet {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    private Long shelterId;
+
     private String breed;
 
     private Gender gender;
 
     private String img = "default img";
 
-    private transient PetLocation location;
+    private transient Location location;
 
     private Status status;
 

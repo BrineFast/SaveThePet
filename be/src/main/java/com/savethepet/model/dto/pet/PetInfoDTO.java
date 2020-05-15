@@ -16,19 +16,22 @@ public class PetInfoDTO {
 
     private UserInfoDTO user;
 
+    private Long shelter_id;
+
     private String breed;
 
     private Gender gender;
 
     private String img;
 
-    private PetLocation location;
+    private Location location;
 
     private Status status;
 
     public static PetInfoDTO getDtoFromPet(Pet pet) {
         User user = pet.getUser();
         return PetInfoDTO.builder()
+                .shelter_id(pet.getShelterId())
                 .status(pet.getStatus())
                 .location(pet.getLocation())
                 .img(pet.getImg())

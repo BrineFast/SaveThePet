@@ -88,12 +88,16 @@ public class PetPageService {
      *
      * @param petInfoDTO
      * @param user_id
+     * @param shelter_id
      */
-    public Pet addingPet(PetInfoChangeDTO petInfoDTO, Long user_id) {
+    public Pet addingPet(PetInfoChangeDTO petInfoDTO, Long user_id, Long shelter_id) {
         User user = userRepo.findById(user_id).orElseThrow(() ->
                 new UserNotFoundException("User with id = " + user_id.toString() + notFound));
         Pet petFromDTO = new Pet();
-        petFromDTO.setUser(user);
+        if (shelter_id == null)
+            petFromDTO.setUser(user);
+        else
+            petFromDTO.setShelterId(shelter_id);
         petFromDTO.setBreed(petInfoDTO.getBreed());
         petFromDTO.setGender(petInfoDTO.getGender());
         petFromDTO.setImg(petInfoDTO.getImg());

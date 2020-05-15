@@ -88,6 +88,7 @@ public class PetPageController {
      *
      * @param petInfoChangeDTO
      * @param user_id
+     * @param shelter_id
      */
     @ApiOperation("Adding the pet")
     @ApiResponses(value = {
@@ -98,8 +99,8 @@ public class PetPageController {
     })
     @PostMapping("/createPet")
     public Pet addPet(@RequestBody @Valid PetInfoChangeDTO petInfoChangeDTO,
-                                   Long user_id) {
-        return petPageService.addingPet(petInfoChangeDTO, user_id);
+                                   Long user_id, Long shelter_id) {
+        return petPageService.addingPet(petInfoChangeDTO, user_id, shelter_id);
     }
 
     /**
