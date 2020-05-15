@@ -5,8 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
-import javax.xml.stream.Location;
-
 /**
  * DTO with user info
  *

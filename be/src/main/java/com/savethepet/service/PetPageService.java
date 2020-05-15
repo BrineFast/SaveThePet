@@ -1,21 +1,16 @@
 package com.savethepet.service;
 
-import com.nimbusds.openid.connect.sdk.claims.UserInfo;
 import com.savethepet.exception_handlers.exception.PetNotFoundException;
 import com.savethepet.exception_handlers.exception.UserNotFoundException;
 import com.savethepet.model.dao.PetRepo;
 import com.savethepet.model.dao.UserRepo;
 import com.savethepet.model.dto.user.PetInfoChangeDTO;
-import com.savethepet.model.dto.user.UserInfoDTO;
 import com.savethepet.model.entity.Pet;
 import com.savethepet.model.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
-import java.util.Set;
 
 /**
  * Service for Pet Page
@@ -45,7 +40,7 @@ public class PetPageService {
     }
 
     /**
-     * Gets Pet by User Id and throws exception if Pet didn`t found
+     * Gets Pets by User Id and throws exception if Pet didn`t found
      *
      * @param id
      * @return
@@ -53,9 +48,7 @@ public class PetPageService {
     public List<Pet> getPetsByUserId(Long id) {
         User user = userRepo.findById(id).orElseThrow(() ->
                 new UserNotFoundException("User with id=" + id.toString() + notFound));
-        UserInfoDTO retUser = new UserInfoDTO(user.getEmail(), user.getName(), user.getPhoneNumber(), user.getImg(), user.getLocation()
-        );
-        return petRepo.findByUser(retUser);
+        return petRepo.findByUser(user);
     }
 
     /**
