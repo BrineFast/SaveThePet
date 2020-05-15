@@ -25,7 +25,7 @@ public class Pet {
 
     private Gender gender;
 
-    private String img;
+    private String img = "default img";
 
     private transient PetLocation location;
 

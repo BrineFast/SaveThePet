@@ -42,8 +42,7 @@ public class PetPageController {
     })
     @GetMapping("pet/{pet_id}")
     public PetInfoDTO getPetInfo(@PathVariable("pet_id") Long id) {
-        Pet pet = petPageService.getPetById(id);
-        return PetInfoDTO.getDtoFromPet(pet);
+        return PetInfoDTO.getDtoFromPet(petPageService.getPetById(id));
     }
 
     /**
@@ -62,9 +61,8 @@ public class PetPageController {
     }
     )
     @PatchMapping("/pet/{pet_id}")
-    public PetInfoChangeDTO changePetInfo(@PathVariable("pet_id") Long id, @RequestBody @Valid PetInfoChangeDTO petInfoChangeDTO) {
-        petPageService.updatePetFromDto(petInfoChangeDTO, id);
-        return petInfoChangeDTO;
+    public Pet changePetInfo(@PathVariable("pet_id") Long id, @RequestBody @Valid PetInfoChangeDTO petInfoChangeDTO) {
+        return petPageService.updatePetFromDto(petInfoChangeDTO, id);
     }
 
     /**
@@ -99,10 +97,9 @@ public class PetPageController {
             @ApiResponse(code = 400, message = "Unknown client id")
     })
     @PostMapping("/createPet")
-    public PetInfoChangeDTO addPet(@RequestBody @Valid PetInfoChangeDTO petInfoChangeDTO,
+    public Pet addPet(@RequestBody @Valid PetInfoChangeDTO petInfoChangeDTO,
                                    Long user_id) {
-        petPageService.addingPet(petInfoChangeDTO, user_id);
-        return petInfoChangeDTO;
+        return petPageService.addingPet(petInfoChangeDTO, user_id);
     }
 
     /**

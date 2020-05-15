@@ -49,7 +49,7 @@ public class User implements UserDetails {
 
     private String location;
 
-    private String img = "default img";
+    private String img;
 
     private boolean active = true;
 

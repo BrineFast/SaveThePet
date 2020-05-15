@@ -75,10 +75,8 @@ public class UserPageController {
             @ApiResponse(code = 404, message = "User with this that id not exists")
     })
     @GetMapping("user/{user_id}/pets")
-    public List<PetInfoDTO> getUserPet(@PathVariable("user_id") Long id,
-                                       @RequestParam(name = "breed", required = false) String breed,
-                                       @RequestParam(name = "status", required = false) Status status) {
-        return petPageService.getPetsByUser(breed, status, id);
+    public List<PetInfoDTO> getUserPet(@PathVariable("user_id") Long id) {
+        return petPageService.getPetsByUser(id);
     }
 
     /**

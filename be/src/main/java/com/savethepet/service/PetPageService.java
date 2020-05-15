@@ -46,14 +46,12 @@ public class PetPageService {
      * Gets Pets by User Id and throws exception if Pet didn`t found
      *
      * @param id
-     * @param breed 
-     * @param status
      * @return
      */
-    public List<PetInfoDTO> getPetsByUser(String breed, Status status, Long id) {
-        userRepo.findById(id).orElseThrow(() ->
+    public List<PetInfoDTO> getPetsByUser(Long id) {
+        User user = userRepo.findById(id).orElseThrow(() ->
                 new UserNotFoundException("User with id=" + id.toString() + notFound));
-        return petRepo.findAll(breed, status, id).stream()
+        return petRepo.findByUser(user).stream()
                 .map(PetInfoDTO::getDtoFromPet).collect(Collectors.toList());
     }
 
