@@ -8,6 +8,11 @@ import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.NotBlank;
 
+/**
+ * DTO with pet change DTO
+ *
+ * @author Alexey Klimov
+ */
 @Data
 public class PetInfoChangeDTO {
 

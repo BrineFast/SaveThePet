@@ -46,6 +46,8 @@ public class PetPageService {
      * Gets Pets by User Id and throws exception if Pet didn`t found
      *
      * @param id
+     * @param breed 
+     * @param status
      * @return
      */
     public List<PetInfoDTO> getPetsByUser(String breed, Status status, Long id) {
@@ -59,6 +61,7 @@ public class PetPageService {
      * Get pets list with filters for the search
      *
      * @param breed
+     * @param status
      * @return
      */
     public List<PetInfoDTO> getPets(String breed, Status status) throws PetNotFoundException {
