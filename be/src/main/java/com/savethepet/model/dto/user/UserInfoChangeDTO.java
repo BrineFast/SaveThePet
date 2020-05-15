@@ -7,6 +7,12 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 
+/**
+ * DTO with user change DTO
+ *
+ * @author Pavel Yudin
+ */
+
 @Data
 public class UserInfoChangeDTO {
 

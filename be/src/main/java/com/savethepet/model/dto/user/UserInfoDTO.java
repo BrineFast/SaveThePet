@@ -1,16 +1,16 @@
 package com.savethepet.model.dto.user;
 
 import com.savethepet.model.entity.Pet;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-
-import java.util.Set;
 
 /**
  * DTO with user info
  *
  * @author Alexey Klimov
  */
+@AllArgsConstructor
 @Builder
 @Data
 public class UserInfoDTO {
@@ -24,7 +24,5 @@ public class UserInfoDTO {
     private String img;
 
     private String location;
-
-    private Set<Pet> pets;
 
 }
