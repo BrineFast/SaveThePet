@@ -1,8 +1,11 @@
 package com.savethepet.controller;
 
+import com.savethepet.model.dto.pet.PetInfoDTO;
 import com.savethepet.model.dto.user.UserInfoChangeDTO;
 import com.savethepet.model.dto.user.UserInfoDTO;
+import com.savethepet.model.entity.Status;
 import com.savethepet.model.entity.User;
+import com.savethepet.service.PetPageService;
 import com.savethepet.service.UserPageService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -19,6 +22,7 @@ import springfox.documentation.annotations.ApiIgnore;
 import javax.validation.Valid;
 import java.net.URI;
 import java.security.Principal;
+import java.util.List;
 
 /**
  * Controller to requests to info about User
@@ -31,6 +35,9 @@ public class UserPageController {
 
     @Autowired
     private UserPageService userPageService;
+
+    @Autowired
+    private PetPageService petPageService;
 
     /**
      * Returns Info about User
@@ -53,6 +60,25 @@ public class UserPageController {
                 .email(user.getEmail())
                 .img(user.getImg())
                 .build();
+    }
+
+
+    /**
+     * Returns info about user pets
+     *
+     * @param id
+     * @return
+     */
+    @ApiOperation("Return info about user pets")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "User info returned"),
+            @ApiResponse(code = 404, message = "User with this that id not exists")
+    })
+    @GetMapping("user/{user_id}/pets")
+    public List<PetInfoDTO> getUserPet(@PathVariable("user_id") Long id,
+                                       @RequestParam(name = "breed", required = false) String breed,
+                                       @RequestParam(name = "status", required = false) Status status) {
+        return petPageService.getPetsByUser(breed, status, id);
     }
 
     /**

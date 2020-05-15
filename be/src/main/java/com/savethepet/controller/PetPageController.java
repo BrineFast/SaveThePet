@@ -1,8 +1,9 @@
 package com.savethepet.controller;
 
-import com.savethepet.model.dto.user.PetInfoChangeDTO;
-import com.savethepet.model.dto.user.PetInfoDTO;
+import com.savethepet.model.dto.pet.PetInfoChangeDTO;
+import com.savethepet.model.dto.pet.PetInfoDTO;
 import com.savethepet.model.entity.Pet;
+import com.savethepet.model.entity.Status;
 import com.savethepet.service.PetPageService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -42,30 +43,7 @@ public class PetPageController {
     @GetMapping("pet/{pet_id}")
     public PetInfoDTO getPetInfo(@PathVariable("pet_id") Long id) {
         Pet pet = petPageService.getPetById(id);
-        return PetInfoDTO.builder()
-                .user(pet.getUser())
-                .breed(pet.getBreed())
-                .gender(pet.getGender())
-                .img(pet.getImg())
-                .location(pet.getLocation())
-                .status(pet.getStatus())
-                .build();
-    }
-
-    /**
-     * Returns info about user pets
-     *
-     * @param id
-     * @return
-     */
-    @ApiOperation("Return info about user pets")
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "User info returned"),
-            @ApiResponse(code = 404, message = "User with this that id not exists")
-    })
-    @GetMapping("user/{user_id}/pets")
-    public List<Pet> getUserPets(@PathVariable("user_id") Long id) {
-        return petPageService.getPetsByUserId(id);
+        return PetInfoDTO.getDtoFromPet(pet);
     }
 
     /**
@@ -92,7 +70,6 @@ public class PetPageController {
     /**
      * Adding new pet
      *
-     *
      * @param breed
      */
     @ApiOperation("Search by breed of pet")
@@ -102,9 +79,10 @@ public class PetPageController {
             @ApiResponse(code = 403, message = "Current user don`t have access to change this info"),
             @ApiResponse(code = 400, message = "Unknown client id")
     })
-    @GetMapping("/pet/{pet_id}/breed")
-    public List<Pet> getPetsBreed(String breed) {
-        return petPageService.getPetsFromBreed(breed);
+    @GetMapping("/pet")
+    public List<PetInfoDTO> getPets(@RequestParam(name = "breed", required = false) String breed,
+                                    @RequestParam(name = "status", required = false) Status status) {
+        return petPageService.getPets(breed, status);
     }
 
     /**
@@ -122,7 +100,7 @@ public class PetPageController {
     })
     @PostMapping("/createPet")
     public PetInfoChangeDTO addPet(@RequestBody @Valid PetInfoChangeDTO petInfoChangeDTO,
-                       Long user_id) {
+                                   Long user_id) {
         petPageService.addingPet(petInfoChangeDTO, user_id);
         return petInfoChangeDTO;
     }

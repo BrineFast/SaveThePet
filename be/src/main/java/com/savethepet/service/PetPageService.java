@@ -4,13 +4,16 @@ import com.savethepet.exception_handlers.exception.PetNotFoundException;
 import com.savethepet.exception_handlers.exception.UserNotFoundException;
 import com.savethepet.model.dao.PetRepo;
 import com.savethepet.model.dao.UserRepo;
-import com.savethepet.model.dto.user.PetInfoChangeDTO;
+import com.savethepet.model.dto.pet.PetInfoChangeDTO;
+import com.savethepet.model.dto.pet.PetInfoDTO;
 import com.savethepet.model.entity.Pet;
+import com.savethepet.model.entity.Status;
 import com.savethepet.model.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Service for Pet Page
@@ -45,10 +48,11 @@ public class PetPageService {
      * @param id
      * @return
      */
-    public List<Pet> getPetsByUserId(Long id) {
-        User user = userRepo.findById(id).orElseThrow(() ->
+    public List<PetInfoDTO> getPetsByUser(String breed, Status status, Long id) {
+        userRepo.findById(id).orElseThrow(() ->
                 new UserNotFoundException("User with id=" + id.toString() + notFound));
-        return petRepo.findByUser(user);
+        return petRepo.findAll(breed, status, id).stream()
+                .map(PetInfoDTO::getDtoFromPet).collect(Collectors.toList());
     }
 
     /**
@@ -57,10 +61,9 @@ public class PetPageService {
      * @param breed
      * @return
      */
-    public List<Pet> getPetsFromBreed(String breed) throws PetNotFoundException{
-        if (petRepo.findAllByBreed(breed).size() == 0)
-            throw new PetNotFoundException("Pets with breed = " + breed + notFound);
-        return petRepo.findAllByBreed(breed);
+    public List<PetInfoDTO> getPets(String breed, Status status) throws PetNotFoundException {
+        return petRepo.findAll(breed, status, null).stream()
+                .map(PetInfoDTO::getDtoFromPet).collect(Collectors.toList());
     }
 
     /**
@@ -104,8 +107,8 @@ public class PetPageService {
      *
      * @param pet_id
      */
-    public void deletePet(Long pet_id) throws PetNotFoundException{
-        if (petRepo.deleteAllById(pet_id) == null);
-            throw new PetNotFoundException("Pet with id = " + pet_id.toString() + notFound);
+    public void deletePet(Long pet_id) throws PetNotFoundException {
+        if (petRepo.deleteAllById(pet_id) == null) ;
+        throw new PetNotFoundException("Pet with id = " + pet_id.toString() + notFound);
     }
 }
