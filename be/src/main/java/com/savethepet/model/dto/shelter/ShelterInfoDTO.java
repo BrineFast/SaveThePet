@@ -1,6 +1,7 @@
 package com.savethepet.model.dto.shelter;
 
 import com.savethepet.model.entity.Location;
+import com.savethepet.model.entity.Shelter;
 import lombok.Builder;
 import lombok.Data;
 
@@ -28,5 +29,14 @@ public class ShelterInfoDTO {
 
     @NotBlank
     private String timeOfWork;
+
+    public static ShelterInfoDTO getDTOFromShelter(Shelter shelter) {
+        return ShelterInfoDTO.builder()
+                .description(shelter.getDescription())
+                .location(shelter.getLocation())
+                .name(shelter.getName())
+                .timeOfWork(shelter.getTimeOfWork())
+                .build();
+    }
 
 }

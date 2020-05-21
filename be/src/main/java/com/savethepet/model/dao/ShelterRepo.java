@@ -10,4 +10,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
  */
 public interface ShelterRepo extends JpaRepository<Shelter, Long> {
 
+    Long deleteAllById(Long shelter_id);
+
 }

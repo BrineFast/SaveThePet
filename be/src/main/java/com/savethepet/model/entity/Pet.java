@@ -25,12 +25,14 @@ public class Pet {
 
     private String breed;
 
+    @Enumerated(EnumType.STRING)
     private Gender gender;
 
     private String img = "default img";
 
     private transient Location location;
 
+    @Enumerated(EnumType.STRING)
     private Status status;
 
 }

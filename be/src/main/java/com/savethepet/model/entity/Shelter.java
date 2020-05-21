@@ -23,8 +23,8 @@ public class Shelter {
 
     private String description;
 
-    @OneToMany
-    private Set<Pet> pets;
+/*    @OneToMany
+    private Set<Pet> pets;*/
 
     private transient Location location;
 

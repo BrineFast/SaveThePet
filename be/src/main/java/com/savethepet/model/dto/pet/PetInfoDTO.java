@@ -5,6 +5,8 @@ import com.savethepet.model.entity.*;
 import lombok.Builder;
 import lombok.Data;
 
+import javax.validation.constraints.NotBlank;
+
 /**
  * DTO with pet info
  *
@@ -18,10 +20,12 @@ public class PetInfoDTO {
 
     private Long shelter_id;
 
+    @NotBlank
     private String breed;
 
     private Gender gender;
 
+    @NotBlank
     private String img;
 
     private Location location;

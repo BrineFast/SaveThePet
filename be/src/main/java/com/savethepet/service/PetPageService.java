@@ -72,6 +72,7 @@ public class PetPageService {
      *
      * @param petInfoChangeDTO
      * @param id
+     * @return
      */
     public Pet updatePetFromDto(PetInfoChangeDTO petInfoChangeDTO, Long id) {
         Pet changedPet = getPetById(id);
@@ -89,6 +90,7 @@ public class PetPageService {
      * @param petInfoDTO
      * @param user_id
      * @param shelter_id
+     * @return
      */
     public Pet addingPet(PetInfoChangeDTO petInfoDTO, Long user_id, Long shelter_id) {
         User user = userRepo.findById(user_id).orElseThrow(() ->

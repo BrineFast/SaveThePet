@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
+import javax.transaction.Transactional;
 import javax.validation.Valid;
 import java.security.Principal;
 import java.util.List;
@@ -55,7 +56,6 @@ public class PetPageController {
     @ApiOperation("Changes pet information")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Info changed successfully"),
-            @ApiResponse(code = 403, message = "Current user don`t have access to change this info"),
             @ApiResponse(code = 406, message = "The transmitted information is not valid"),
             @ApiResponse(code = 404, message = "Pet with this that id not exists")
     }
@@ -66,15 +66,15 @@ public class PetPageController {
     }
 
     /**
-     * Adding new pet
+     * Get all pets
      *
      * @param breed
+     * @return
      */
     @ApiOperation("Search by breed of pet")
     @ApiResponses(value = {
             @ApiResponse(code = 302, message = "Redirected"),
             @ApiResponse(code = 404, message = "Pet with this that id not exists"),
-            @ApiResponse(code = 403, message = "Current user don`t have access to change this info"),
             @ApiResponse(code = 400, message = "Unknown client id")
     })
     @GetMapping("/pet")
@@ -89,12 +89,12 @@ public class PetPageController {
      * @param petInfoChangeDTO
      * @param user_id
      * @param shelter_id
+     * @return
      */
     @ApiOperation("Adding the pet")
     @ApiResponses(value = {
             @ApiResponse(code = 302, message = "redirected"),
             @ApiResponse(code = 404, message = "Pet with this that id not exists"),
-            @ApiResponse(code = 403, message = "Current user don`t have access to change this info"),
             @ApiResponse(code = 400, message = "Unknown client id")
     })
     @PostMapping("/createPet")
@@ -112,7 +112,6 @@ public class PetPageController {
     @ApiOperation("Delete the pet")
     @ApiResponses(value = {
             @ApiResponse(code = 404, message = "Pet with this that id not exists"),
-            @ApiResponse(code = 403, message = "Current user don`t have access to change this info"),
             @ApiResponse(code = 400, message = "Unknown client id"),
     })
     @DeleteMapping("/pet/{pet_id}")
