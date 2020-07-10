@@ -3,10 +3,9 @@ package com.savethepet.controller;
 import com.savethepet.model.dto.pet.PetInfoDTO;
 import com.savethepet.model.dto.user.UserInfoChangeDTO;
 import com.savethepet.model.dto.user.UserInfoDTO;
-import com.savethepet.model.entity.Status;
-import com.savethepet.model.entity.User;
+import com.savethepet.model.dto.user.UserRegistrationDTO;
 import com.savethepet.service.PetPageService;
-import com.savethepet.service.UserPageService;
+import com.savethepet.service.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -16,6 +15,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
@@ -34,10 +34,27 @@ import java.util.List;
 public class UserPageController {
 
     @Autowired
-    private UserPageService userPageService;
+    private UserService userService;
 
     @Autowired
     private PetPageService petPageService;
+
+
+    /**
+     * Saves new user in DB
+     *
+     * @param dto
+     * @return
+     */
+    @ApiOperation("Saves new user")
+    @ApiResponses(value = {
+            @ApiResponse(code = 201, message = "New User created successfully"),
+            @ApiResponse(code = 406, message = "User Already Exists")
+    })
+    @PostMapping("/registration")
+    public ResponseEntity<UserInfoDTO> addUser(@Validated @RequestBody UserRegistrationDTO dto) {
+        return new ResponseEntity<>(userService.saveUser(dto), HttpStatus.CREATED);
+    }
 
     /**
      * Returns Info about User
@@ -52,14 +69,7 @@ public class UserPageController {
     })
     @GetMapping("/user/{user_id}")
     public UserInfoDTO getUserInfo(@PathVariable("user_id") Long id) {
-        User user = userPageService.getUserById(id);
-        return UserInfoDTO.builder()
-                .name(user.getName())
-                .location(user.getLocation())
-                .phoneNumber(user.getPhoneNumber())
-                .email(user.getEmail())
-                .img(user.getImg())
-                .build();
+        return UserInfoDTO.getValue(userService.getUserById(id));
     }
 
 
@@ -71,7 +81,7 @@ public class UserPageController {
      */
     @ApiOperation("Return info about user pets")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "User info returned"),
+            @ApiResponse(code = 200,     message = "User info returned"),
             @ApiResponse(code = 404, message = "User with this that id not exists")
     })
     @GetMapping("user/{user_id}/pets")
@@ -96,9 +106,9 @@ public class UserPageController {
     }
     )
     @PatchMapping("/user/{user_id}")
-    public void changeUserInfo(@ApiIgnore Principal principal, @PathVariable("user_id") Long id, @RequestBody @Valid UserInfoChangeDTO userInfoChangeDTO) {
-        userPageService.checkUserInfoChangeAccess(principal, id);
-        userPageService.updateUserFromDto(userInfoChangeDTO, id);
+    public UserInfoDTO changeUserInfo(@ApiIgnore Principal principal, @PathVariable("user_id") Long id, @RequestBody @Valid UserInfoChangeDTO userInfoChangeDTO) {
+        userService.checkUserHaveAccess(principal, id);
+        return userService.updateUserFromDto(userInfoChangeDTO, id);
     }
 
     /**
@@ -119,7 +129,7 @@ public class UserPageController {
     @PatchMapping("/user/{user_id}/oauth/{ClientName}")
     @Transactional
     public ResponseEntity addOauth2(@ApiIgnore Principal principal, @PathVariable("user_id") Long id, @PathVariable("ClientName") String clientName) {
-        userPageService.checkUserInfoChangeAccess(principal, id);
+        userService.checkUserHaveAccess(principal, id);
         OAuth2Controller.NEW_OAUTH_USER_ID = id;
         OAuth2Controller.IS_LINK_NEW_OAUTH = true;
         HttpHeaders responseHeaders = new HttpHeaders();
@@ -143,8 +153,8 @@ public class UserPageController {
     })
     @DeleteMapping("/user/{user_id}/oauth/{ClientName}")
     public void deleteOauth2(@ApiIgnore Principal principal, @PathVariable("user_id") Long id, @PathVariable("ClientName") String clientName) {
-        userPageService.checkUserInfoChangeAccess(principal, id);
-        userPageService.checkLostAuth(clientName, id);
-        userPageService.deleteOauthFromUser(clientName, id);
+        userService.checkUserHaveAccess(principal, id);
+        userService.checkLostAuth(clientName, id);
+        userService.deleteOauthFromUser(clientName, id);
     }
 }

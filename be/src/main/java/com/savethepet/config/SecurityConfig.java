@@ -1,6 +1,7 @@
 package com.savethepet.config;
 
-import com.savethepet.service.CustomUserService;
+import com.savethepet.config.handler.*;
+import com.savethepet.service.CustomUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -17,8 +18,6 @@ import org.springframework.security.oauth2.client.registration.ClientRegistratio
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.oauth2.client.registration.InMemoryClientRegistrationRepository;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableOAuth2Client;
-import org.springframework.security.web.authentication.AuthenticationFailureHandler;
-import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -71,7 +70,22 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter implements WebM
     private String adminPassword;
 
     @Autowired
-    private CustomUserService customUserService;
+    private CustomUserDetailsService userDetailsService;
+
+    @Autowired
+    private CustomAuthenticationFailureHandler authenticationFailureHandler;
+
+    @Autowired
+    private CustomAuthenticationSuccessHandler authenticationSuccessHandler;
+
+    @Autowired
+    private CustomAccessDeniedHandler accessDeniedHandler;
+
+    @Autowired
+    private CustomAuthenticationEntryPoint authenticationEntryPoint;
+
+    @Autowired
+    private CustomLogoutSuccessHandler logoutSuccessHandler;
 
     @Bean
     PasswordEncoder passwordEncoder() {
@@ -103,9 +117,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter implements WebM
                         "/configuration/ui").permitAll()
                 .anyRequest().authenticated()
                 .and()
+                .exceptionHandling()
+                .accessDeniedHandler(accessDeniedHandler)
+                .authenticationEntryPoint(authenticationEntryPoint)
+                .and()
                 .formLogin()
-                .failureHandler(customAuthenticationFailureHandler())
-                .successHandler(customAuthenticationSuccessHandler())
+                .failureHandler(authenticationFailureHandler)
+                .successHandler(authenticationSuccessHandler)
                 .and()
                 .oauth2Login()
                 .clientRegistrationRepository(clientRegistrationRepository())
@@ -113,6 +131,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter implements WebM
                 .defaultSuccessUrl("/be/oauth/registration", true)
                 .and()
                 .logout()
+                .logoutSuccessHandler(logoutSuccessHandler)
                 .logoutUrl("/logout")
                 .logoutSuccessUrl("/login")
                 .invalidateHttpSession(true)
@@ -129,7 +148,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter implements WebM
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth
-                .userDetailsService(customUserService)
+                .userDetailsService(userDetailsService)
                 .passwordEncoder(passwordEncoder())
                 .and()
                 .inMemoryAuthentication().withUser(adminUsername).password(passwordEncoder().encode(adminPassword)).roles("USER");
@@ -183,15 +202,5 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter implements WebM
     public OAuth2AuthorizedClientService oAuth2AuthorizedClientService() {
         return new
                 InMemoryOAuth2AuthorizedClientService(clientRegistrationRepository());
-    }
-
-    @Bean
-    public AuthenticationFailureHandler customAuthenticationFailureHandler() {
-        return new CustomAuthenticationFailureHandler();
-    }
-
-    @Bean
-    public AuthenticationSuccessHandler customAuthenticationSuccessHandler() {
-        return new CustomAuthenticationSuccessHandler();
     }
 }

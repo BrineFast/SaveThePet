@@ -1,17 +1,20 @@
 package com.savethepet.service;
 
-import com.savethepet.exception_handlers.exception.ClientRegistrationIdNotFound;
-import com.savethepet.exception_handlers.exception.LostInformationAboutUserException;
-import com.savethepet.exception_handlers.exception.NotEnoughPermissionsException;
-import com.savethepet.exception_handlers.exception.UserNotFoundException;
+import com.savethepet.exception_handlers.exception.*;
 import com.savethepet.model.dao.UserRepo;
 import com.savethepet.model.dto.user.UserInfoChangeDTO;
+import com.savethepet.model.dto.user.UserInfoDTO;
+import com.savethepet.model.dto.user.UserRegistrationDTO;
 import com.savethepet.model.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.stereotype.Service;
 
+import java.net.URI;
 import java.security.Principal;
 
 /**
@@ -20,10 +23,10 @@ import java.security.Principal;
  * @author Alexey Klimov
  */
 @Service
-public class UserPageService {
+public class UserService {
 
     private static final String userWithOauthId = "User with Oauth2 id =";
-    private static final String notFound="not found";
+    private static final String notFound = "not found";
     private static final String yandex = "yandex";
     private static final String google = "google";
     private static final String facebook = "facebook";
@@ -33,6 +36,18 @@ public class UserPageService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    public UserInfoDTO saveUser(UserRegistrationDTO dto) {
+        if (userRepo.findByEmail(dto.getEmail()).isPresent()) {
+            throw new UserAlreadyExistException("User with with email: " + dto.getEmail() + " exists");
+        } else {
+            User userFromDto = new User();
+            userFromDto.setEmail(dto.getEmail());
+            userFromDto.setPassword(passwordEncoder.encode(dto.getPassword()));
+            userFromDto.setName(dto.getName());
+            return UserInfoDTO.getValue(userRepo.save(userFromDto));
+        }
+    }
 
     /**
      * Gets User by Id and throws exception if User didnt found
@@ -62,14 +77,14 @@ public class UserPageService {
      * @param userInfoChangeDTO
      * @param id
      */
-    public void updateUserFromDto(UserInfoChangeDTO userInfoChangeDTO, Long id) {
+    public UserInfoDTO updateUserFromDto(UserInfoChangeDTO userInfoChangeDTO, Long id) {
         User changedUser = getUserById(id);
         changedUser.setName(userInfoChangeDTO.getName());
         changedUser.setEmail(userInfoChangeDTO.getEmail());
         changedUser.setLocation(userInfoChangeDTO.getLocation());
         changedUser.setPhoneNumber(userInfoChangeDTO.getPhoneNumber());
         changedUser.setPassword(passwordEncoder.encode(userInfoChangeDTO.getPassword()));
-        userRepo.save(changedUser);
+        return UserInfoDTO.getValue(userRepo.save(changedUser));
     }
 
     /**
@@ -101,7 +116,7 @@ public class UserPageService {
      * @param principal
      * @param id
      */
-    public void checkUserInfoChangeAccess(Principal principal, Long id) {
+    public void checkUserHaveAccess(Principal principal, Long id) {
         String principalName = principal.getName();
         if (principal instanceof OAuth2AuthenticationToken) {
             String oauth2ClientId = ((OAuth2AuthenticationToken) principal).getAuthorizedClientRegistrationId();
