@@ -11,13 +11,13 @@ import { faMapMarked, faDog, faBoxOpen, faEnvelope } from '@fortawesome/free-sol
 export class MenuComponent implements OnInit {
   menuItems = [
     {
-      title: 'Tracks',
+      title: 'Map',
       path: '',
       isActive: false,
       icon: faMapMarked,
     },
     {
-      title: 'Skill Sets',
+      title: 'Pets',
       path: '',
       isActive: false,
       icon: faDog
